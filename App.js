@@ -5,14 +5,17 @@ import NavigationStack from "./src/navigation/NavigationStack";
 import NavigationTab from "./src/navigation/NavigationTab";
 import NavigationDrawer from "./src/navigation/NavigationDrawer";
 import Navigation from "./src/navigation/Navigation";
+import { AuthProvider } from "./src/context/AuthContext";
 
 export default function App() {
 	return (
 		<NavigationContainer>
-			{/* <NavigationStack /> */}
-			{/* <NavigationTab /> */}
-			{/* <NavigationDrawer /> */}
-			<Navigation />
+			<AuthProvider>
+				{/* <NavigationStack /> */}
+				{/* <NavigationTab /> */}
+				{/* <NavigationDrawer /> */}
+				<Navigation />
+			</AuthProvider>
 		</NavigationContainer>
 
 	);

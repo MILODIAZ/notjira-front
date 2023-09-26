@@ -6,23 +6,40 @@ import {
 	TouchableWithoutFeedback,
 } from "react-native";
 import React from "react";
+import { capitalize } from "lodash";
+import { useNavigation } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import getColorByPokemonType from "../utils/getColorByPokemonType";
+import type { PokedexStackParamList } from "../navigation/PokedexNavigation";
 
-export default function PokemonCard(props) {
+type PokemonCardProps = {
+	pokemon: any;
+};
+
+export default function PokemonCard<PokemonCardProps>(props) {
 	const { pokemon } = props;
+	const navigation =
+		useNavigation<NativeStackNavigationProp<PokedexStackParamList>>();
+
+	const pokemonColor = getColorByPokemonType(pokemon.type);
+
+	const bgStyles = { backgroundColor: pokemonColor, ...styles.bgStyles };
 
 	const goToPokemon = () => {
-		console.log(`Vamos al pokemon: ${pokemon.name}`);
+		navigation.navigate("Pokemon", { pokemon: pokemon });
 	};
 
 	return (
 		<TouchableWithoutFeedback onPress={goToPokemon}>
 			<View style={styles.card}>
 				<View style={styles.spacing}>
-					<View style={styles.bgStyles}>
+					<View style={bgStyles}>
 						<Text style={styles.number}>
-							#{`${pokemon.order}`.padStart(3, "0")}
+							#{`${pokemon.id}`.padStart(3, "0")}
 						</Text>
-						<Text style={styles.name}>{pokemon.name}</Text>
+						<Text style={styles.name}>
+							{capitalize(pokemon.name)}
+						</Text>
 						<Image
 							source={{ uri: pokemon.image }}
 							style={styles.image}
@@ -43,14 +60,16 @@ const styles = StyleSheet.create({
 		flex: 1,
 		padding: 5,
 	},
-	bgStyles: {
-		backgroundColor: "gray",
-	},
 	name: {
 		color: "#fff",
 		fontWeight: "bold",
 		fontSize: 15,
 		paddingTop: 10,
+	},
+	bgStyles: {
+		flex: 1,
+		borderRadius: 5,
+		padding: 10,
 	},
 	number: {
 		position: "absolute",
