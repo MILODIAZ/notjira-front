@@ -2,8 +2,11 @@ import { View, Text, StyleSheet, Button } from "react-native";
 import React from "react";
 import useAuth from "../../hooks/useAuth";
 
-export default function UserData() {
+export default function UserData(props) {
+	const { navigation } = props;
+
 	const { auth, logout } = useAuth();
+
 	return (
 		<View style={styles.content}>
 			<View style={styles.titleBlock}>
@@ -20,12 +23,18 @@ export default function UserData() {
 				/>
 				<ItemMenu title="Username:" text={auth.username} />
 				<ItemMenu title="Email:" text={auth.email} />
-				<ItemMenu title="Total Favoritos:" text={`0 pokemons`} />
 			</View>
 
 			<Button
 				title="Desconectarse"
-				onPress={logout}
+				onPress={() => {
+					logout();
+					navigation.navigate("SignInNavigation");
+					navigation.reset({
+						index: 0,
+						routes: [{ name: "SignInNavigation" }],
+					});
+				}}
 				style={styles.btnLogout}
 			/>
 		</View>

@@ -1,57 +1,31 @@
 import React from "react";
-import { Image } from "react-native";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import Icon from "react-native-vector-icons/FontAwesome5";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-import FavoriteNavigation from "./FavoriteNavigation";
-import PokedexNavigation from "./PokedexNavigation";
-import AccountNavigation from "./AccountNavigation";
+import SignInTabNavigation from "./SignInTabNavigation";
+import AppNavigation from "./AppNavigation";
+import useAuth from "../hooks/useAuth";
 
-const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
 
 export default function Navigation() {
 	return (
-		<Tab.Navigator initialRouteName="Favorite">
-			<Tab.Screen
-				name="FavoriteTab"
-				component={FavoriteNavigation}
+		<Stack.Navigator initialRouteName="SignInNavigation">
+			<Stack.Screen
+				name="SignInNavigation"
+				component={SignInTabNavigation}
 				options={{
-					tabBarLabel: "Favoritos",
-					tabBarIcon: ({ color, size }) => (
-						<Icon name="heart" color={color} size={size} />
-					),
-					headerShown: false,
+					title: "",
+					headerTransparent: true,
 				}}
 			/>
-			<Tab.Screen
-				name="PokedexTab"
-				component={PokedexNavigation}
+			<Stack.Screen
+				name="AppNavigation"
+				component={AppNavigation}
 				options={{
-					tabBarLabel: "",
-					tabBarIcon: () => renderPokeball(),
-					headerShown: false,
+					title: "",
+					headerTransparent: true,
 				}}
 			/>
-			<Tab.Screen
-				name="AccountTab"
-				component={AccountNavigation}
-				options={{
-					tabBarLabel: "Mi cuenta",
-					tabBarIcon: ({ color, size }) => (
-						<Icon name="user" color={color} size={size} />
-					),
-					headerShown: false,
-				}}
-			/>
-		</Tab.Navigator>
-	);
-}
-
-function renderPokeball() {
-	return (
-		<Image
-			source={require("../assets/pokeball.png")}
-			style={{ width: 75, height: 75, top: -15 }}
-		/>
+		</Stack.Navigator>
 	);
 }

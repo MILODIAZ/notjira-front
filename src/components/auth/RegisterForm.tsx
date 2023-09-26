@@ -9,15 +9,9 @@ import {
 import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { user, userDetails } from "../../utils/userDB";
-import useAuth from "../../hooks/useAuth";
 
-export default function LoginForm(props) {
-	const { navigation } = props;
-
+export default function RegisterForm() {
 	const [error, setError] = useState("");
-
-	const { login } = useAuth();
 
 	const formik = useFormik({
 		initialValues: initialValues(),
@@ -25,26 +19,31 @@ export default function LoginForm(props) {
 		validateOnChange: false,
 		onSubmit: (formValue) => {
 			setError("");
-			const { username, password } = formValue;
-			if (username !== user.username || password !== user.password) {
-				setError("El usuario o la contraseña no son correctos");
-			} else {
-				login(userDetails);
-				console.log("Login correcto");
-				console.log(userDetails);
-				navigation.navigate("AppNavigation");
-				navigation.reset({
-					index: 0,
-					routes: [{ name: "AppNavigation" }],
-				});
-			}
+			const { name, lastName, username, password, email } = formValue;
+			console.log(formValue);
 		},
 	});
 
 	return (
 		<View>
-			<Text style={styles.title}>Iniciar sesión</Text>
+			<Text style={styles.title}>Registrarse</Text>
 			<Text style={styles.error}>{error}</Text>
+			<TextInput
+				placeholder="Nombre"
+				style={styles.input}
+				autoCapitalize="none"
+				value={formik.values.name}
+				onChangeText={(text) => formik.setFieldValue("name", text)}
+			/>
+			<Text style={styles.error}>{formik.errors.name}</Text>
+			<TextInput
+				placeholder="Apellido"
+				style={styles.input}
+				autoCapitalize="none"
+				value={formik.values.lastName}
+				onChangeText={(text) => formik.setFieldValue("lastName", text)}
+			/>
+			<Text style={styles.error}>{formik.errors.lastName}</Text>
 			<TextInput
 				placeholder="Nombre de usuario"
 				style={styles.input}
@@ -52,6 +51,7 @@ export default function LoginForm(props) {
 				value={formik.values.username}
 				onChangeText={(text) => formik.setFieldValue("username", text)}
 			/>
+			<Text style={styles.error}>{formik.errors.username}</Text>
 			<TextInput
 				placeholder="Contraseña"
 				style={styles.input}
@@ -60,18 +60,27 @@ export default function LoginForm(props) {
 				value={formik.values.password}
 				onChangeText={(text) => formik.setFieldValue("password", text)}
 			/>
-			<Button title="Entrar" onPress={formik.handleSubmit} />
-
-			<Text style={styles.error}>{formik.errors.username}</Text>
 			<Text style={styles.error}>{formik.errors.password}</Text>
+			<TextInput
+				placeholder="Email"
+				style={styles.input}
+				autoCapitalize="none"
+				value={formik.values.email}
+				onChangeText={(text) => formik.setFieldValue("email", text)}
+			/>
+			<Text style={styles.error}>{formik.errors.email}</Text>
+			<Button title="Registrar" onPress={formik.handleSubmit} />
 		</View>
 	);
 }
 
 function initialValues() {
 	return {
+		name: "",
+		lastName: "",
 		username: "",
 		password: "",
+		email: "",
 	};
 }
 
@@ -86,6 +95,11 @@ function validationSchema() {
 				"La contraseña debe contener al menos una letra mayúscula, una letra minúscula, un número y un carácter especial"
 			)
 			.required("La contraseña es obligatoria"),*/
+		name: Yup.string().required("El nombre es obligatorio"),
+		lastName: Yup.string().required("El apellido es obligatorio"),
+		email: Yup.string()
+			.email("Ingresa un correo electrónico válido")
+			.required("El correo es obligatorio"),
 	};
 }
 
@@ -99,7 +113,7 @@ const styles = StyleSheet.create({
 	},
 	input: {
 		height: 40,
-		margin: 12,
+		marginHorizontal: 12,
 		borderWidth: 1,
 		padding: 10,
 		borderRadius: 10,
@@ -107,6 +121,5 @@ const styles = StyleSheet.create({
 	error: {
 		textAlign: "center",
 		color: "#f00",
-		marginTop: 20,
 	},
 });
