@@ -10,18 +10,16 @@ export default function UserData(props) {
 	return (
 		<View style={styles.content}>
 			<View style={styles.titleBlock}>
-				<Text style={styles.title}>Bienvenido,</Text>
-				<Text
-					style={styles.title}
-				>{`${auth.firstName} ${auth.lastName}`}</Text>
+				<Text style={styles.title}>Bienvenid@,</Text>
+				<Text style={styles.title}>{`${auth.name} ${auth.lastName}`}</Text>
 			</View>
 
 			<View style={styles.dataContent}>
 				<ItemMenu
 					title="Nombre:"
-					text={`${auth.firstName} ${auth.lastName}`}
+					text={`${auth.name} ${auth.lastName}`}
 				/>
-				<ItemMenu title="Username:" text={auth.username} />
+				<ItemMenu title="Username:" text={auth.userName} />
 				<ItemMenu title="Email:" text={auth.email} />
 			</View>
 

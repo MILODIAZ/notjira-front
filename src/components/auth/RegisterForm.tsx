@@ -4,29 +4,49 @@ import {
 	StyleSheet,
 	TextInput,
 	Button,
-	Keyboard,
+	
 } from "react-native";
 import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { loginFetch, register } from "../../api/api.connection";
 
 export default function RegisterForm() {
 	const [error, setError] = useState("");
+	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [successMessage, setSuccessMessage] = useState("");
 
 	const formik = useFormik({
 		initialValues: initialValues(),
 		validationSchema: Yup.object(validationSchema()),
 		validateOnChange: false,
-		onSubmit: (formValue) => {
+		onSubmit: async (formValue) => {
 			setError("");
+			setIsSubmitting(true);			
 			const { name, lastName, username, password, email } = formValue;
-			console.log(formValue);
+			try {
+				const response = await register(name, lastName, email, username, password);
+				if(response.success){
+					setSuccessMessage("Registrado exitosamente");
+          			setTimeout(() => {
+           		 	setSuccessMessage("");
+          			}, 10000);
+          			formik.resetForm();
+				}else{
+					setError("Nombre de usuario ya está utilizado");
+				}
+			} catch (error) {
+				setError("Error inesperado");
+			} finally{
+				setIsSubmitting(false);
+			}
 		},
 	});
 
 	return (
 		<View>
 			<Text style={styles.title}>Registrarse</Text>
+			<Text style={styles.success}>{successMessage}</Text>
 			<Text style={styles.error}>{error}</Text>
 			<TextInput
 				placeholder="Nombre"
@@ -69,7 +89,7 @@ export default function RegisterForm() {
 				onChangeText={(text) => formik.setFieldValue("email", text)}
 			/>
 			<Text style={styles.error}>{formik.errors.email}</Text>
-			<Button title="Registrar" onPress={formik.handleSubmit} />
+			<Button title="Registrar" onPress={formik.handleSubmit} disabled={isSubmitting}/>
 		</View>
 	);
 }
@@ -87,14 +107,13 @@ function initialValues() {
 function validationSchema() {
 	return {
 		username: Yup.string().required("El usuario es obligatorio"),
-		password: Yup.string().required("La contraseña es obligatoria"),
-		/*password: Yup.string()
+		password: Yup.string()
 			.min(8, "La contraseña debe tener al menos 8 caracteres")
 			.matches(
 				/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
 				"La contraseña debe contener al menos una letra mayúscula, una letra minúscula, un número y un carácter especial"
 			)
-			.required("La contraseña es obligatoria"),*/
+			.required("La contraseña es obligatoria"),
 		name: Yup.string().required("El nombre es obligatorio"),
 		lastName: Yup.string().required("El apellido es obligatorio"),
 		email: Yup.string()
@@ -121,5 +140,9 @@ const styles = StyleSheet.create({
 	error: {
 		textAlign: "center",
 		color: "#f00",
+	},
+	success: {
+		textAlign: "center",
+		color: "green",
 	},
 });

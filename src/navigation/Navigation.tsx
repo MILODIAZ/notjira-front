@@ -3,11 +3,10 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import SignInTabNavigation from "./SignInTabNavigation";
 import AppNavigation from "./AppNavigation";
-import useAuth from "../hooks/useAuth";
 
 const Stack = createNativeStackNavigator();
 
-export default function Navigation() {
+export default function Navigation():React.JSX.Element {
 	return (
 		<Stack.Navigator initialRouteName="SignInNavigation">
 			<Stack.Screen

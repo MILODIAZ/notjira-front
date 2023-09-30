@@ -6,11 +6,19 @@ export const AuthContext = createContext({
 	logout: () => {},
 });
 
+type userDataType = {
+	name: string;
+	lastName: string;
+	userName: string;
+	password: string;
+	email: string;
+};
+
 export function AuthProvider(props) {
 	const { children } = props;
 	const [auth, setAuth] = useState(undefined);
 
-	const login = (userData) => {
+	const login = (userData: userDataType) => {
 		setAuth(userData);
 	};
 
