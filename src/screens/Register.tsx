@@ -2,11 +2,18 @@ import { SafeAreaView, KeyboardAvoidingView } from "react-native";
 import React from "react";
 
 import RegisterForm from "../components/auth/RegisterForm";
+import { NavigationProp } from "@react-navigation/native";
 
-export default function Register() {
+type LoginProps = {
+	navigation: NavigationProp<any>;
+};
+
+export default function Register(props:LoginProps) {
+	const { navigation } = props;
+
 	return (
 		<SafeAreaView>
-			<RegisterForm />
+			<RegisterForm navigation={navigation} />
 		</SafeAreaView>
 	);
 }

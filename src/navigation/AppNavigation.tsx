@@ -43,18 +43,7 @@ export default function AppNavigation() {
 					),
 					headerShown: true,
 				}}
-			/>
-			<Tab.Screen
-				name="EditProfile"
-				component={EditProfile}
-				options={{
-					tabBarLabel: "Editar",
-					tabBarIcon: ({ color, size }) => (
-						<Icon name="user" color={color} size={size} />
-					),
-					headerShown: true,
-				}}
-			/>
+			/>			
 		</Tab.Navigator>
 	);
 }

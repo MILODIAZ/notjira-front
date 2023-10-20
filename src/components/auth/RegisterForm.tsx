@@ -11,7 +11,8 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { loginFetch, register } from "../../api/api.connection";
 
-export default function RegisterForm() {
+export default function RegisterForm(props) {
+	const { navigation } = props;
 	const [error, setError] = useState("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [successMessage, setSuccessMessage] = useState("");
@@ -26,12 +27,13 @@ export default function RegisterForm() {
 			const { name, lastName, username, password, email } = formValue;
 			try {
 				const response = await register(name, lastName, email, username, password);
-				if(response.success){
-					setSuccessMessage("Registrado exitosamente");
-          			setTimeout(() => {
-           		 	setSuccessMessage("");
-          			}, 10000);
+				console.log(response);
+				if(response){					
           			formik.resetForm();
+					  navigation.navigate("Login");
+					  navigation.reset({
+					  index: 0,
+					  routes: [{ name: "Login" }]});
 				}else{
 					setError("Nombre de usuario ya está utilizado");
 				}
