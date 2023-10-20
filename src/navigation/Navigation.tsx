@@ -3,10 +3,11 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import SignInTabNavigation from "./SignInTabNavigation";
 import AppNavigation from "./AppNavigation";
+import EditProfile from "../screens/EditProfile";
 
 const Stack = createNativeStackNavigator();
 
-export default function Navigation():React.JSX.Element {
+export default function Navigation(): React.JSX.Element {
 	return (
 		<Stack.Navigator initialRouteName="SignInNavigation">
 			<Stack.Screen
@@ -20,6 +21,14 @@ export default function Navigation():React.JSX.Element {
 			<Stack.Screen
 				name="AppNavigation"
 				component={AppNavigation}
+				options={{
+					title: "",
+					headerTransparent: true,
+				}}
+			/>
+			<Stack.Screen
+				name="EditProfile"
+				component={EditProfile}
 				options={{
 					title: "",
 					headerTransparent: true,

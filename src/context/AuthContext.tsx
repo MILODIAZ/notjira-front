@@ -7,6 +7,7 @@ export const AuthContext = createContext({
 });
 
 type userDataType = {
+	id: string;
 	name: string;
 	lastName: string;
 	userName: string;

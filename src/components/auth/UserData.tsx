@@ -7,11 +7,17 @@ export default function UserData(props) {
 
 	const { auth, logout } = useAuth();
 
+	const editNavigation = () => {
+		navigation.navigate("EditProfile");
+	};
+
 	return (
 		<View style={styles.content}>
 			<View style={styles.titleBlock}>
 				<Text style={styles.title}>Bienvenid@,</Text>
-				<Text style={styles.title}>{`${auth.name} ${auth.lastName}`}</Text>
+				<Text
+					style={styles.title}
+				>{`${auth.name} ${auth.lastName}`}</Text>
 			</View>
 
 			<View style={styles.dataContent}>
@@ -22,6 +28,12 @@ export default function UserData(props) {
 				<ItemMenu title="Username:" text={auth.userName} />
 				<ItemMenu title="Email:" text={auth.email} />
 			</View>
+
+			<Button
+				style={styles.editBtn}
+				title="Editar"
+				onPress={editNavigation}
+			/>
 
 			<Button
 				title="Desconectarse"
@@ -77,5 +89,8 @@ const styles = StyleSheet.create({
 	},
 	btonLogout: {
 		paddingTop: 20,
+	},
+	editBtn: {
+		marginTop: 10,
 	},
 });
