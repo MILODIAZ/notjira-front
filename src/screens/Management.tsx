@@ -84,13 +84,15 @@ export default function Management(props) {
 			const teamId = teamData.data.id;
 			const teamName = teamData.data.name;
 			const teamUsers = teamData.data.users;
+			const teamProjects = teamData.data.projects;
 			navigation.navigate("EditTeam", {
 				teamId: teamId,
 				teamName: teamName,
 				teamUsers: teamUsers,
+				teamProjects: teamProjects,
 			});
 		} catch (error) {
-			console.error("Error al obtener equipos:", error);
+			console.error("Error al obtener equipo:", error);
 		}
 	};
 

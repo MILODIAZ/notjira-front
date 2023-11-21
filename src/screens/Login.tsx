@@ -1,5 +1,5 @@
-import { SafeAreaView } from "react-native";
 import React from "react";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 import LoginForm from "../components/auth/LoginForm";
 import { NavigationProp } from "@react-navigation/native";
@@ -8,12 +8,12 @@ type LoginProps = {
 	navigation: NavigationProp<any>;
 };
 
-export default function Login(props:LoginProps) {
-	const { navigation } = props;	
+export default function Login(props: LoginProps) {
+	const { navigation } = props;
 
 	return (
-		<SafeAreaView>
+		<KeyboardAwareScrollView>
 			<LoginForm navigation={navigation} />
-		</SafeAreaView>
+		</KeyboardAwareScrollView>
 	);
 }

@@ -1,11 +1,4 @@
-import {
-	View,
-	Text,
-	StyleSheet,
-	TextInput,
-	Button,
-	Image
-} from "react-native";
+import { View, Text, StyleSheet, TextInput, Button, Image } from "react-native";
 import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -27,33 +20,33 @@ export default function LoginForm(props) {
 		onSubmit: async (formValue) => {
 			setError("");
 			setIsSubmitting(true);
-			const { username, password } = formValue;			
+			const { username, password } = formValue;
 			try {
-				const response = await loginFetch(username, password);				
-				if (response.error){
+				const response = await loginFetch(username, password);
+				if (response.error) {
 					setError("El usuario o la contraseña no son correctos");
-				}else{
-					login(response);			
+				} else {
+					login(response);
 					navigation.navigate("AppNavigation");
 					navigation.reset({
-					index: 0,
-					routes: [{ name: "AppNavigation" }],
-				});
+						index: 0,
+						routes: [{ name: "AppNavigation" }],
+					});
 				}
-			} catch (error) {				
+			} catch (error) {
 				setError("Error inesperado");
-			} finally{
+			} finally {
 				setIsSubmitting(false);
-			}		
+			}
 		},
 	});
 
 	return (
-		<View>			
+		<View>
 			<Image
-        		source={require("../../assets/notjira-logo.png")}
-        		style={styles.logo}
-      		/>
+				source={require("../../assets/notjira-logo.png")}
+				style={styles.logo}
+			/>
 			<Text style={styles.title}>Iniciar sesión</Text>
 			<Text style={styles.error}>{error}</Text>
 			<TextInput
@@ -63,7 +56,7 @@ export default function LoginForm(props) {
 				value={formik.values.username}
 				onChangeText={(text) => formik.setFieldValue("username", text)}
 			/>
-				<Text style={styles.error}>{formik.errors.username}</Text>
+			<Text style={styles.error}>{formik.errors.username}</Text>
 			<TextInput
 				placeholder="Contraseña"
 				style={styles.input}
@@ -73,9 +66,11 @@ export default function LoginForm(props) {
 				onChangeText={(text) => formik.setFieldValue("password", text)}
 			/>
 			<Text style={styles.error}>{formik.errors.password}</Text>
-			<Button title="Entrar" onPress={formik.handleSubmit} disabled={isSubmitting}/>
-
-			
+			<Button
+				title="Entrar"
+				onPress={formik.handleSubmit}
+				disabled={isSubmitting}
+			/>
 		</View>
 	);
 }
@@ -101,7 +96,6 @@ function validationSchema() {
 }
 
 const styles = StyleSheet.create({
-	
 	title: {
 		textAlign: "center",
 		fontSize: 28,
@@ -119,11 +113,10 @@ const styles = StyleSheet.create({
 	error: {
 		textAlign: "center",
 		color: "#f00",
-		
-	},	
-	  logo: {
-		width: 300, 
+	},
+	logo: {
+		width: 300,
 		height: 300,
-		alignSelf:"center"
-	  },
+		alignSelf: "center",
+	},
 });

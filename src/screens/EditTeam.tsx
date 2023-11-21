@@ -1,14 +1,17 @@
 import {
 	FlatList,
-	SafeAreaView,
 	StyleSheet,
 	Text,
 	TextInput,
 	Button,
+	TouchableOpacity,
+	View,
+	LogBox,
 } from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useRoute } from "@react-navigation/native";
 import RNPickerSelect from "react-native-picker-select";
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 
@@ -18,14 +21,18 @@ import {
 	removeUserFromTeam,
 	registerUserOnTeam,
 	removeTeam,
+	getProject,
+	getTeam,
+	createProject,
 } from "../api/api.connection";
 
 export default function EditTeam(props) {
 	const { navigation } = props;
-	const { refreshPage } = useAuth();
+	const { refresh, refreshPage } = useAuth();
 	const route = useRoute();
-	const { teamId, teamName, teamUsers } = route.params || {};
+	const { teamId, teamName, teamUsers, teamProjects } = route.params || {};
 
+	const [projects, setProjects] = useState(teamProjects);
 	const [editTeamSubmitting, setEditTeamSubmitting] = useState(false);
 	const [editTeamError, setEditTeamError] = useState("");
 
@@ -145,8 +152,92 @@ export default function EditTeam(props) {
 		}
 	}
 
+	type ItemProps = { title: string; id: number };
+
+	const goToProject = async (id: number) => {
+		try {
+			const projectData = await getProject(id);
+			const projectId = projectData.data.id;
+			const projectName = projectData.data.name;
+			const projectTasks = projectData.data.tasks;
+			navigation.navigate("EditProject", {
+				teamId: teamId,
+				projectId: projectId,
+				projectName: projectName,
+				projectTasks: projectTasks,
+			});
+		} catch (error) {
+			console.error("Error al obtener proyecto:", error);
+		}
+	};
+
+	const TeamItem = ({ title, id }: ItemProps) => (
+		<TouchableOpacity onPress={() => goToProject(id)}>
+			<View style={styles.item}>
+				<Text style={styles.title}>{title}</Text>
+			</View>
+		</TouchableOpacity>
+	);
+
+	useEffect(() => {
+		LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
+	}, []);
+
+	const [newProjectError, setNewProjectError] = useState("");
+	const [auxNewProjectBoolean, setAuxNewProjectBoolean] = useState(false);
+
+	const newProjectFormik = useFormik({
+		initialValues: newProjectInitialValues(),
+		validationSchema: Yup.object(newProjectValidationSchema()),
+		validateOnChange: false,
+		onSubmit: async (formValue) => {
+			setNewProjectError("");
+			setEditTeamSubmitting(true);
+			const { name } = formValue;
+			try {
+				const response = await createProject(name, teamId);
+				console.log(response);
+				if (response == true) {
+					newProjectFormik.resetForm();
+					setAuxNewProjectBoolean(!auxNewProjectBoolean);
+				} else {
+					setNewProjectError("Nombre de proyecto ya está utilizado");
+				}
+			} catch (error) {
+				setNewProjectError("Error inesperado");
+			} finally {
+				setEditTeamSubmitting(false);
+			}
+		},
+	});
+
+	function newProjectInitialValues() {
+		return {
+			name: "",
+		};
+	}
+
+	function newProjectValidationSchema() {
+		return {
+			name: Yup.string().required("Escriba el nombre del proyecto"),
+		};
+	}
+
+	useEffect(() => {
+		const fetchTeamProjects = async () => {
+			try {
+				const teamData = await getTeam(teamId);
+				setProjects(teamData.data.projects);
+				console.log(refresh);
+			} catch (error) {
+				console.error("Error al obtener proyectos del equipo:", error);
+			}
+		};
+		fetchTeamProjects();
+	}, [auxNewProjectBoolean, refresh]);
+
 	return (
-		<SafeAreaView>
+		<KeyboardAwareScrollView>
 			<Text style={styles.title}>{teamName}</Text>
 
 			<Text style={styles.error}>{editTeamError}</Text>
@@ -228,13 +319,39 @@ export default function EditTeam(props) {
 				disabled={editTeamSubmitting}
 			/>
 
+			<Text style={styles.title}>Proyectos</Text>
+			<FlatList
+				data={projects}
+				renderItem={({ item }) => (
+					<TeamItem title={item.name} id={item.id} />
+				)}
+				keyExtractor={(item) => item.name}
+				scrollEnabled={false}
+			/>
+
+			<Text style={styles.error}>{newProjectError}</Text>
+			<TextInput
+				style={styles.input}
+				onChangeText={(text) =>
+					newProjectFormik.setFieldValue("name", text)
+				}
+				placeholder="Nombre de proyecto"
+				value={newProjectFormik.values.name}
+			/>
+			<Text style={styles.error}>{newProjectFormik.errors.name}</Text>
 			<Button
-				title="ELIMINAR"
+				title="Crear proyecto"
+				onPress={newProjectFormik.handleSubmit}
+				disabled={editTeamSubmitting}
+			/>
+
+			<Button
+				title="ELIMINAR EQUIPO"
 				onPress={() => deleteTeam(teamId)}
 				disabled={editTeamSubmitting}
 				color="red"
 			/>
-		</SafeAreaView>
+		</KeyboardAwareScrollView>
 	);
 }
 
@@ -251,5 +368,11 @@ const styles = StyleSheet.create({
 		margin: 12,
 		borderWidth: 1,
 		padding: 10,
+	},
+	item: {
+		backgroundColor: "#f9c2ff",
+		padding: 20,
+		marginVertical: 8,
+		marginHorizontal: 16,
 	},
 });
