@@ -4,6 +4,7 @@ export const AuthContext = createContext({
 	user: undefined,
 	login: () => {},
 	logout: () => {},
+	refreshPage: () => {},
 });
 
 type userDataType = {
@@ -18,6 +19,7 @@ type userDataType = {
 export function AuthProvider(props) {
 	const { children } = props;
 	const [auth, setAuth] = useState(undefined);
+	const [refresh, setRefresh] = useState(true);
 
 	const login = (userData: userDataType) => {
 		setAuth(userData);
@@ -27,10 +29,16 @@ export function AuthProvider(props) {
 		setAuth(undefined);
 	};
 
+	const refreshPage = () => {
+		setRefresh(!refresh);
+	};
+
 	const valueContext = {
 		auth,
 		login,
 		logout,
+		refresh,
+		refreshPage,
 	};
 
 	return (

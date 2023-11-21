@@ -106,10 +106,44 @@ export async function saveUserChanges(
 	}
 }
 
-export async function registerTeam(name: string) {
+export async function getTeams() {
 	try {
 		const url = `${API_HOST}/team`;
 		const respuesta = await fetch(url, {
+			method: "GET",
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+		const data = await respuesta.json();
+		console.log(data);
+		return data;
+	} catch (error) {
+		console.error("Error de red:", error);
+	}
+}
+
+export async function getTeam(id: number) {
+	try {
+		const url = `${API_HOST}/team/${id}`;
+		const respuesta = await fetch(url, {
+			method: "GET",
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+		const data = await respuesta.json();
+		console.log(data);
+		return data;
+	} catch (error) {
+		console.error("Error de red:", error);
+	}
+}
+
+export async function createTeam(name: string) {
+	try {
+		const url = `${API_HOST}/team`;
+		const response = await fetch(url, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
@@ -119,42 +153,69 @@ export async function registerTeam(name: string) {
 			}),
 		});
 
-		const data = await respuesta.json();
+		const data = await response.json();
 
-		console.log(respuesta);
+		console.log(data.success);
 
-		if (respuesta.status !== 201) {
-			console.log("Hubo un error: " + respuesta.status + data.message);
+		if (data.success == false) {
+			console.log("Hubo un error");
 		} else {
-			console.log("Datos de usuario guardados con éxito");
+			console.log("Equipo guardado con éxito");
 		}
+		return data.success;
 	} catch (error) {
 		console.error("Error de red:", error);
 	}
 }
 
-export async function removeTeam(id: string) {
+export async function updateTeam(id: number, name: string) {
 	try {
 		const url = `${API_HOST}/team/${id}`;
-		const respuesta = await fetch(url, {
-			method: "DELETE",
+		const response = await fetch(url, {
+			method: "PUT",
 			headers: {
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify({
-				id,
+				name,
 			}),
 		});
 
-		const data = await respuesta.json();
+		const data = await response.json();
 
-		console.log(respuesta);
+		console.log(data.success);
 
-		if (respuesta.status !== 201) {
-			console.log("Hubo un error: " + respuesta.status + data.message);
+		if (data.success == false) {
+			console.log("Hubo un error");
 		} else {
-			console.log("Datos de usuario guardados con éxito");
+			console.log("Equipo actualizado con éxito");
 		}
+		return data.success;
+	} catch (error) {
+		console.error("Error de red:", error);
+	}
+}
+
+export async function removeTeam(id: number) {
+	try {
+		const url = `${API_HOST}/team/${id}`;
+		const response = await fetch(url, {
+			method: "DELETE",
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+
+		const data = await response.json();
+
+		console.log(data.success);
+
+		if (data.success == false) {
+			console.log("Hubo un error");
+		} else {
+			console.log("Equipo actualizado con éxito");
+		}
+		return data.success;
 	} catch (error) {
 		console.error("Error de red:", error);
 	}
@@ -166,21 +227,23 @@ export async function registerUserOnTeam(id: string, userName: string) {
 
 	try {
 		const url = `${API_HOST}/team/add/${id}?userName=${userName}`;
-		const respuesta = await fetch(url, {
+		const response = await fetch(url, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
 			},
 		});
 
-		const data = await respuesta.json();
+		const data = await response.json();
 
-		console.log(respuesta);
+		console.log(data.success);
 
-		if (respuesta.status !== 201) {
-			console.log("Hubo un error: " + respuesta.status + data.message);
+		if (data.success == false) {
+			console.log("Hubo un error");
+			return data;
 		} else {
-			console.log("Datos de usuario guardados con éxito");
+			console.log("Participante agregado con éxito");
+			return data;
 		}
 	} catch (error) {
 		console.error("Error de red:", error);
@@ -188,26 +251,22 @@ export async function registerUserOnTeam(id: string, userName: string) {
 }
 
 export async function removeUserFromTeam(id: string, userName: string) {
-	console.log("nombre ", userName);
-	console.log("id ", id);
-
 	try {
 		const url = `${API_HOST}/team/remove/${id}?userName=${userName}`;
-		const respuesta = await fetch(url, {
+		const response = await fetch(url, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
 			},
 		});
 
-		const data = await respuesta.json();
+		const data = await response.json();
 
-		console.log(respuesta);
-
-		if (respuesta.status !== 201) {
-			console.log("Hubo un error: " + respuesta.status + data.message);
+		if (data.success == false) {
+			console.log("Hubo un error");
 		} else {
-			console.log("Datos de usuario guardados con éxito");
+			console.log("Participante eliminado con éxito");
+			return data.success;
 		}
 	} catch (error) {
 		console.error("Error de red:", error);

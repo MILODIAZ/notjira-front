@@ -33,7 +33,6 @@ const EditProfile = () => {
 				paddingHorizontal: 22,
 			}}
 		>
-			<Text>EditProfile</Text>
 			<Text>First name</Text>
 			<TextInput
 				style={styles.textInputStyle}

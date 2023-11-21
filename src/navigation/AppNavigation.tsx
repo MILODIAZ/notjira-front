@@ -6,7 +6,6 @@ import Icon from "react-native-vector-icons/FontAwesome5";
 import Profile from "../screens/Profile";
 import Management from "../screens/Management";
 import Tasks from "../screens/Tasks";
-import EditProfile from "../screens/EditProfile";
 
 const Tab = createBottomTabNavigator();
 
@@ -43,7 +42,7 @@ export default function AppNavigation() {
 					),
 					headerShown: true,
 				}}
-			/>			
+			/>
 		</Tab.Navigator>
 	);
 }
