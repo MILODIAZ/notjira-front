@@ -28,7 +28,7 @@ import {
 
 export default function EditTeam(props) {
 	const { navigation } = props;
-	const { refresh, refreshPage } = useAuth();
+	const { refresh, refreshPage, auth } = useAuth();
 	const route = useRoute();
 	const { teamId, teamName, teamUsers, teamProjects } = route.params || {};
 
@@ -57,7 +57,7 @@ export default function EditTeam(props) {
 			setEditTeamSubmitting(true);
 			const { name } = formValue;
 			try {
-				const response = await updateTeam(teamId, name);
+				const response = await updateTeam(teamId, name, auth.jwt);
 				console.log(response);
 				if (response == true) {
 					editTeamFormik.resetForm();
@@ -84,7 +84,8 @@ export default function EditTeam(props) {
 			try {
 				const response = await removeUserFromTeam(
 					teamId,
-					selectedUsertoRemove
+					selectedUsertoRemove,
+					auth.jwt
 				);
 				console.log(response);
 				if (response == true) {
@@ -115,7 +116,8 @@ export default function EditTeam(props) {
 			try {
 				const response = await registerUserOnTeam(
 					teamId,
-					selectedUsertoAdd
+					selectedUsertoAdd,
+					auth.jwt
 				);
 				console.log(response);
 				if (response.success == true) {
@@ -137,7 +139,7 @@ export default function EditTeam(props) {
 
 	async function deleteTeam(id: number) {
 		try {
-			const response = await removeTeam(id);
+			const response = await removeTeam(id, auth.jwt);
 			console.log(response);
 			if (response == true) {
 				navigation.navigate("Management");
@@ -156,7 +158,7 @@ export default function EditTeam(props) {
 
 	const goToProject = async (id: number) => {
 		try {
-			const projectData = await getProject(id);
+			const projectData = await getProject(id, auth.jwt);
 			const projectId = projectData.data.id;
 			const projectName = projectData.data.name;
 			const projectTasks = projectData.data.tasks;
@@ -201,7 +203,7 @@ export default function EditTeam(props) {
 			setEditTeamSubmitting(true);
 			const { name } = formValue;
 			try {
-				const response = await createProject(name, teamId);
+				const response = await createProject(name, teamId, auth.jwt);
 				console.log(response);
 				if (response == true) {
 					newProjectFormik.resetForm();
@@ -232,7 +234,7 @@ export default function EditTeam(props) {
 	useEffect(() => {
 		const fetchTeamProjects = async () => {
 			try {
-				const teamData = await getTeam(teamId);
+				const teamData = await getTeam(teamId, auth.jwt);
 				setProjects(teamData.data.projects);
 				console.log(refresh);
 			} catch (error) {

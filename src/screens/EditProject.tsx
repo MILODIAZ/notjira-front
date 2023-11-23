@@ -55,7 +55,7 @@ export default function EditProject(props) {
 			setEditProjectSubmitting(true);
 			const { name } = formValue;
 			try {
-				const response = await updateProject(projectId, name);
+				const response = await updateProject(projectId, name, auth.jwt);
 				console.log(response);
 				if (response == true) {
 					editProjectFormik.resetForm();
@@ -75,7 +75,7 @@ export default function EditProject(props) {
 
 	async function deleteProject(id: number) {
 		try {
-			const response = await removeProject(id);
+			const response = await removeProject(id, auth.jwt);
 			console.log(response);
 			if (response == true) {
 				navigation.navigate("Management");
@@ -94,7 +94,7 @@ export default function EditProject(props) {
 
 	const goToTask = async (id: number) => {
 		try {
-			const taskData = await getTask(id);
+			const taskData = await getTask(id, auth.jwt);
 			const taskId = taskData.data.id;
 			const taskName = taskData.data.name;
 			const taskDescription = taskData.data.description;
@@ -132,7 +132,8 @@ export default function EditProject(props) {
 					projectId,
 					auth.userName,
 					name,
-					description
+					description,
+					auth.jwt
 				);
 				console.log(response);
 				if (response == true) {
@@ -167,7 +168,7 @@ export default function EditProject(props) {
 	useEffect(() => {
 		const fetchProject = async () => {
 			try {
-				const projectData = await getProject(projectId);
+				const projectData = await getProject(projectId, auth.jwt);
 				setProject(projectData.data.name);
 				setTasks(projectData.data.tasks);
 				console.log(refresh);

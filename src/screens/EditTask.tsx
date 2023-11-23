@@ -11,7 +11,7 @@ import { updateTask, removeTask } from "../api/api.connection";
 export default function EditTask(props) {
 	const { navigation } = props;
 	const route = useRoute();
-	const { refreshPage } = useAuth();
+	const { refreshPage, auth } = useAuth();
 	const { taskId, taskName, taskDescription } = route.params || {};
 
 	const [task, setTask] = useState(taskName);
@@ -43,7 +43,12 @@ export default function EditTask(props) {
 			setEditTaskSubmitting(true);
 			const { name, description } = formValue;
 			try {
-				const response = await updateTask(taskId, name, description);
+				const response = await updateTask(
+					taskId,
+					name,
+					description,
+					auth.jwt
+				);
 				console.log(response);
 				if (response == true) {
 					editTaskFormik.values.name = name;
@@ -65,7 +70,7 @@ export default function EditTask(props) {
 	async function deleteTask(id: number) {
 		setEditTaskSubmitting(true);
 		try {
-			const response = await removeTask(id);
+			const response = await removeTask(id, auth.jwt);
 			console.log(response);
 			if (response == true) {
 				navigation.navigate("Management");

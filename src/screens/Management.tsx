@@ -21,7 +21,7 @@ import { createTeam } from "../api/api.connection";
 
 export default function Management(props) {
 	const { navigation } = props;
-	const { refresh } = useAuth();
+	const { refresh, auth } = useAuth();
 	const [teams, setTeams] = useState([]);
 	const [newTeamSubmitting, setNewTeamSubmitting] = useState(false);
 	const [newTeamError, setNewTeamError] = useState("");
@@ -36,7 +36,7 @@ export default function Management(props) {
 			setNewTeamSubmitting(true);
 			const { name } = formValue;
 			try {
-				const response = await createTeam(name);
+				const response = await createTeam(name, auth.jwt);
 				console.log(response);
 				if (response == true) {
 					newTeamFormik.resetForm();
@@ -67,7 +67,7 @@ export default function Management(props) {
 	useEffect(() => {
 		const fetchTeams = async () => {
 			try {
-				const teamsData = await getTeams();
+				const teamsData = await getTeams(auth.jwt);
 				setTeams(teamsData.data);
 				console.log(refresh);
 			} catch (error) {
@@ -86,7 +86,7 @@ export default function Management(props) {
 	const goToTeam = async (id: number) => {
 		setNewTeamSubmitting(true);
 		try {
-			const teamData = await getTeam(id);
+			const teamData = await getTeam(id, auth.jwt);
 			const teamId = teamData.data.id;
 			const teamName = teamData.data.name;
 			const teamUsers = teamData.data.users;

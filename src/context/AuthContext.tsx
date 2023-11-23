@@ -14,6 +14,7 @@ type userDataType = {
 	userName: string;
 	password: string;
 	email: string;
+	jwt: string;
 };
 
 export function AuthProvider(props) {

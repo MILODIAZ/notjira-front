@@ -29,7 +29,7 @@ export default function Tasks(props) {
 	useEffect(() => {
 		const fetchTeams = async () => {
 			try {
-				const taskData = await getTasks(filterName);
+				const taskData = await getTasks(filterName, auth.jwt);
 				setTasks(taskData.data);
 				console.log(refresh);
 			} catch (error) {
@@ -51,7 +51,8 @@ export default function Tasks(props) {
 				status,
 				getDate(),
 				init,
-				auth.userName
+				auth.userName,
+				auth.jwt
 			);
 			console.log(response);
 			if (response == true) {
@@ -70,7 +71,7 @@ export default function Tasks(props) {
 		setEditTaskSubmitting(true);
 
 		try {
-			const response = await removeTask(id);
+			const response = await removeTask(id, auth.jwt);
 			console.log(response);
 			if (response == true) {
 				refreshPage();

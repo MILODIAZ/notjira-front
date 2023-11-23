@@ -106,13 +106,14 @@ export async function saveUserChanges(
 	}
 }
 
-export async function getTeams() {
+export async function getTeams(jwt: string) {
 	try {
 		const url = `${API_HOST}/team`;
 		const response = await fetch(url, {
 			method: "GET",
 			headers: {
 				"Content-Type": "application/json",
+				Authorization: `Bearer ${jwt}`,
 			},
 		});
 		const data = await response.json();
@@ -123,13 +124,14 @@ export async function getTeams() {
 	}
 }
 
-export async function getTeam(id: number) {
+export async function getTeam(id: number, jwt: string) {
 	try {
 		const url = `${API_HOST}/team/${id}`;
 		const response = await fetch(url, {
 			method: "GET",
 			headers: {
 				"Content-Type": "application/json",
+				Authorization: `Bearer ${jwt}`,
 			},
 		});
 		const data = await response.json();
@@ -140,13 +142,14 @@ export async function getTeam(id: number) {
 	}
 }
 
-export async function createTeam(name: string) {
+export async function createTeam(name: string, jwt: string) {
 	try {
 		const url = `${API_HOST}/team`;
 		const response = await fetch(url, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
+				Authorization: `Bearer ${jwt}`,
 			},
 			body: JSON.stringify({
 				name,
@@ -168,13 +171,14 @@ export async function createTeam(name: string) {
 	}
 }
 
-export async function updateTeam(id: number, name: string) {
+export async function updateTeam(id: number, name: string, jwt: string) {
 	try {
 		const url = `${API_HOST}/team/${id}`;
 		const response = await fetch(url, {
 			method: "PUT",
 			headers: {
 				"Content-Type": "application/json",
+				Authorization: `Bearer ${jwt}`,
 			},
 			body: JSON.stringify({
 				name,
@@ -196,13 +200,14 @@ export async function updateTeam(id: number, name: string) {
 	}
 }
 
-export async function removeTeam(id: number) {
+export async function removeTeam(id: number, jwt: string) {
 	try {
 		const url = `${API_HOST}/team/${id}`;
 		const response = await fetch(url, {
 			method: "DELETE",
 			headers: {
 				"Content-Type": "application/json",
+				Authorization: `Bearer ${jwt}`,
 			},
 		});
 
@@ -221,7 +226,11 @@ export async function removeTeam(id: number) {
 	}
 }
 
-export async function registerUserOnTeam(id: number, userName: string) {
+export async function registerUserOnTeam(
+	id: number,
+	userName: string,
+	jwt: string
+) {
 	console.log("nombre ", userName);
 	console.log("id ", id);
 
@@ -231,6 +240,7 @@ export async function registerUserOnTeam(id: number, userName: string) {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
+				Authorization: `Bearer ${jwt}`,
 			},
 		});
 
@@ -250,13 +260,18 @@ export async function registerUserOnTeam(id: number, userName: string) {
 	}
 }
 
-export async function removeUserFromTeam(id: number, userName: string) {
+export async function removeUserFromTeam(
+	id: number,
+	userName: string,
+	jwt: string
+) {
 	try {
 		const url = `${API_HOST}/team/remove/${id}?userName=${userName}`;
 		const response = await fetch(url, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
+				Authorization: `Bearer ${jwt}`,
 			},
 		});
 
@@ -273,13 +288,14 @@ export async function removeUserFromTeam(id: number, userName: string) {
 	}
 }
 
-export async function getProject(id: number) {
+export async function getProject(id: number, jwt: string) {
 	try {
 		const url = `${API_HOST}/project/${id}`;
 		const response = await fetch(url, {
 			method: "GET",
 			headers: {
 				"Content-Type": "application/json",
+				Authorization: `Bearer ${jwt}`,
 			},
 		});
 		const data = await response.json();
@@ -290,13 +306,14 @@ export async function getProject(id: number) {
 	}
 }
 
-export async function createProject(name: string, teamId: number) {
+export async function createProject(name: string, teamId: number, jwt: string) {
 	try {
 		const url = `${API_HOST}/project`;
 		const response = await fetch(url, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
+				Authorization: `Bearer ${jwt}`,
 			},
 			body: JSON.stringify({
 				name,
@@ -319,13 +336,14 @@ export async function createProject(name: string, teamId: number) {
 	}
 }
 
-export async function updateProject(id: number, name: string) {
+export async function updateProject(id: number, name: string, jwt: string) {
 	try {
 		const url = `${API_HOST}/project/${id}`;
 		const response = await fetch(url, {
 			method: "PUT",
 			headers: {
 				"Content-Type": "application/json",
+				Authorization: `Bearer ${jwt}`,
 			},
 			body: JSON.stringify({
 				name,
@@ -347,13 +365,14 @@ export async function updateProject(id: number, name: string) {
 	}
 }
 
-export async function removeProject(id: number) {
+export async function removeProject(id: number, jwt: string) {
 	try {
 		const url = `${API_HOST}/project/${id}`;
 		const response = await fetch(url, {
 			method: "DELETE",
 			headers: {
 				"Content-Type": "application/json",
+				Authorization: `Bearer ${jwt}`,
 			},
 		});
 
@@ -372,13 +391,14 @@ export async function removeProject(id: number) {
 	}
 }
 
-export async function getTask(id: number) {
+export async function getTask(id: number, jwt: string) {
 	try {
 		const url = `${API_HOST}/task/${id}`;
 		const response = await fetch(url, {
 			method: "GET",
 			headers: {
 				"Content-Type": "application/json",
+				Authorization: `Bearer ${jwt}`,
 			},
 		});
 		const data = await response.json();
@@ -393,7 +413,8 @@ export async function createTask(
 	projectId: number,
 	creatorUser: string,
 	name: string,
-	description: string
+	description: string,
+	jwt: string
 ) {
 	try {
 		const url = `${API_HOST}/task`;
@@ -401,6 +422,7 @@ export async function createTask(
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
+				Authorization: `Bearer ${jwt}`,
 			},
 			body: JSON.stringify({
 				name,
@@ -428,7 +450,8 @@ export async function createTask(
 export async function updateTask(
 	id: number,
 	name: string,
-	description: string
+	description: string,
+	jwt: string
 ) {
 	try {
 		const url = `${API_HOST}/task/${id}`;
@@ -436,6 +459,7 @@ export async function updateTask(
 			method: "PUT",
 			headers: {
 				"Content-Type": "application/json",
+				Authorization: `Bearer ${jwt}`,
 			},
 			body: JSON.stringify({
 				name,
@@ -458,13 +482,14 @@ export async function updateTask(
 	}
 }
 
-export async function removeTask(id: number) {
+export async function removeTask(id: number, jwt: string) {
 	try {
 		const url = `${API_HOST}/task/${id}`;
 		const response = await fetch(url, {
 			method: "PUT",
 			headers: {
 				"Content-Type": "application/json",
+				Authorization: `Bearer ${jwt}`,
 			},
 			body: JSON.stringify({
 				deleted: true,
@@ -486,14 +511,14 @@ export async function removeTask(id: number) {
 	}
 }
 
-export async function getTasks(filterName: string) {
-	console.log(filterName);
+export async function getTasks(filterName: string, jwt: string) {
 	try {
 		const url = `${API_HOST}/task/getTask`;
 		const response = await fetch(url, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
+				Authorization: `Bearer ${jwt}`,
 			},
 			body: JSON.stringify({ filterName }),
 		});
@@ -510,7 +535,8 @@ export async function taskStatus(
 	status: string,
 	date: string,
 	init: boolean,
-	responsableUser: string
+	responsableUser: string,
+	jwt: string
 ) {
 	console.log(id);
 	console.log(status);
@@ -528,6 +554,7 @@ export async function taskStatus(
 			method: "PUT",
 			headers: {
 				"Content-Type": "application/json",
+				Authorization: `Bearer ${jwt}`,
 			},
 			body: JSON.stringify(requestBody),
 		});
