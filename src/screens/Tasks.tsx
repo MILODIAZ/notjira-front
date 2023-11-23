@@ -14,7 +14,8 @@ import useAuth from "../hooks/useAuth";
 import { getTasks, removeTask, taskStatus } from "../api/api.connection";
 import { getDate } from "../utils/functions";
 
-export default function Tasks() {
+export default function Tasks(props) {
+	const { navigation } = props;
 	const [tasks, setTasks] = useState([]);
 	const [editTaskSubmitting, setEditTaskSubmitting] = useState(false);
 	const [editTaskError, setEditTaskError] = useState("");
@@ -79,11 +80,39 @@ export default function Tasks() {
 		}
 	}
 
-	type ItemProps = { title: string; id: number };
+	type ItemProps = {
+		title: string;
+		id: number;
+		description: string;
+		startDate: string;
+		endDate: string;
+		responsable: string;
+		creator: string;
+		project: string;
+	};
 
-	const PendingTaskItem = ({ title, id }: ItemProps) => (
+	const PendingTaskItem = ({
+		title,
+		id,
+		description,
+		startDate,
+		endDate,
+		responsable,
+		creator,
+		project,
+	}: ItemProps) => (
 		<TouchableOpacity
-			onPress={() => console.log()}
+			onPress={() =>
+				goToTask(
+					title,
+					description,
+					startDate,
+					endDate,
+					responsable,
+					creator,
+					project
+				)
+			}
 			disabled={editTaskSubmitting}
 		>
 			<View style={styles.item}>
@@ -99,9 +128,28 @@ export default function Tasks() {
 		</TouchableOpacity>
 	);
 
-	const InProgressTaskItem = ({ title, id }: ItemProps) => (
+	const InProgressTaskItem = ({
+		title,
+		id,
+		description,
+		startDate,
+		endDate,
+		responsable,
+		creator,
+		project,
+	}: ItemProps) => (
 		<TouchableOpacity
-			onPress={() => console.log()}
+			onPress={() =>
+				goToTask(
+					title,
+					description,
+					startDate,
+					endDate,
+					responsable,
+					creator,
+					project
+				)
+			}
 			disabled={editTaskSubmitting}
 		>
 			<View style={styles.item2}>
@@ -117,9 +165,28 @@ export default function Tasks() {
 		</TouchableOpacity>
 	);
 
-	const FinishedTaskItem = ({ title, id }: ItemProps) => (
+	const FinishedTaskItem = ({
+		title,
+		id,
+		description,
+		startDate,
+		endDate,
+		responsable,
+		creator,
+		project,
+	}: ItemProps) => (
 		<TouchableOpacity
-			onPress={() => console.log()}
+			onPress={() =>
+				goToTask(
+					title,
+					description,
+					startDate,
+					endDate,
+					responsable,
+					creator,
+					project
+				)
+			}
 			disabled={editTaskSubmitting}
 		>
 			<View style={styles.item3}>
@@ -135,6 +202,26 @@ export default function Tasks() {
 		</TouchableOpacity>
 	);
 
+	function goToTask(
+		name: string,
+		description: string,
+		startDate: string,
+		endDate: string,
+		responsable: string,
+		creator: string,
+		project: string
+	) {
+		navigation.navigate("Task", {
+			taskName: name,
+			taskDescription: description,
+			taskStart: startDate,
+			taskEnd: endDate,
+			taskResponsable: responsable,
+			taskCreator: creator,
+			taskProject: project,
+		});
+	}
+
 	return (
 		<KeyboardAwareScrollView>
 			<Text style={styles.title}>Tareas</Text>
@@ -147,7 +234,16 @@ export default function Tasks() {
 						item.responsable.userName === auth.userName
 				)}
 				renderItem={({ item }) => (
-					<InProgressTaskItem title={item.name} id={item.id} />
+					<InProgressTaskItem
+						title={item.name}
+						id={item.id}
+						description={item.description}
+						startDate={item.startDate}
+						endDate="-"
+						responsable={item.responsable.userName}
+						creator={item.creator.userName}
+						project={item.project.name}
+					/>
 				)}
 				keyExtractor={(item) => item.id}
 			/>
@@ -158,7 +254,16 @@ export default function Tasks() {
 					(item) => !item.deleted && item.status === "pendiente"
 				)}
 				renderItem={({ item }) => (
-					<PendingTaskItem title={item.name} id={item.id} />
+					<PendingTaskItem
+						title={item.name}
+						id={item.id}
+						description={item.description}
+						startDate="-"
+						endDate="-"
+						responsable="-"
+						creator={item.creator.userName}
+						project={item.project.name}
+					/>
 				)}
 				keyExtractor={(item) => item.id}
 			/>
@@ -173,7 +278,16 @@ export default function Tasks() {
 						item.responsable.userName === auth.userName
 				)}
 				renderItem={({ item }) => (
-					<FinishedTaskItem title={item.name} id={item.id} />
+					<FinishedTaskItem
+						title={item.name}
+						id={item.id}
+						description={item.description}
+						startDate={item.startDate}
+						endDate={item.endDate}
+						responsable={item.responsable.userName}
+						creator={item.creator.userName}
+						project={item.project.name}
+					/>
 				)}
 				keyExtractor={(item) => item.id}
 			/>

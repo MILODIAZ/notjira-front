@@ -11,13 +11,12 @@ import { updateTask, removeTask } from "../api/api.connection";
 export default function EditTask(props) {
 	const { navigation } = props;
 	const route = useRoute();
-	const { refresh, refreshPage } = useAuth();
+	const { refreshPage } = useAuth();
 	const { taskId, taskName, taskDescription } = route.params || {};
 
 	const [task, setTask] = useState(taskName);
 	const [editTaskSubmitting, setEditTaskSubmitting] = useState(false);
 	const [editTaskError, setEditTaskError] = useState("");
-	const [auxEditTaskBoolean, setAuxEditTaskBoolean] = useState(false);
 
 	function editTaskInitialValues() {
 		return {

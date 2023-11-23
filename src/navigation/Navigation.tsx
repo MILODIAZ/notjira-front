@@ -7,6 +7,7 @@ import EditProfile from "../screens/EditProfile";
 import EditTeam from "../screens/EditTeam";
 import EditProject from "../screens/EditProject";
 import EditTask from "../screens/EditTask";
+import Task from "../screens/Task";
 
 const Stack = createNativeStackNavigator();
 
@@ -58,6 +59,14 @@ export default function Navigation(): React.JSX.Element {
 				component={EditTask}
 				options={{
 					title: "Editar tarea",
+					headerShown: true,
+				}}
+			/>
+			<Stack.Screen
+				name="Task"
+				component={Task}
+				options={{
+					title: "Ver tarea",
 					headerShown: true,
 				}}
 			/>
