@@ -6,6 +6,7 @@ import {
 	View,
 	FlatList,
 	LogBox,
+	TextInput,
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import React, { useEffect, useState } from "react";
@@ -13,6 +14,7 @@ import React, { useEffect, useState } from "react";
 import useAuth from "../hooks/useAuth";
 import { getTasks, removeTask, taskStatus } from "../api/api.connection";
 import { getDate } from "../utils/functions";
+import Icon from "react-native-vector-icons/FontAwesome5";
 
 export default function Tasks(props) {
 	const { navigation } = props;
@@ -22,10 +24,12 @@ export default function Tasks(props) {
 
 	const { refresh, refreshPage, auth } = useAuth();
 
+	const [filterName, setFilterName] = useState("");
+
 	useEffect(() => {
 		const fetchTeams = async () => {
 			try {
-				const taskData = await getTasks();
+				const taskData = await getTasks(filterName);
 				setTasks(taskData.data);
 				console.log(refresh);
 			} catch (error) {
@@ -224,6 +228,43 @@ export default function Tasks(props) {
 
 	return (
 		<KeyboardAwareScrollView>
+			<View
+				style={{
+					flexDirection: "row",
+					alignItems: "center",
+					marginTop: 20,
+				}}
+			>
+				<TextInput
+					style={{
+						flex: 1,
+						height: 40,
+						borderColor: "gray",
+						borderWidth: 1,
+						paddingLeft: 10,
+						marginLeft: 15,
+					}}
+					placeholder="Buscar..."
+					value={filterName}
+					onChangeText={(text) => setFilterName(text)}
+				/>
+				<TouchableOpacity
+					onPress={() => refreshPage()}
+					style={{ padding: 10 }}
+				>
+					<Icon name="search" size={20} color="black" />
+				</TouchableOpacity>
+				<TouchableOpacity
+					onPress={() => {
+						setFilterName("");
+						refreshPage();
+					}}
+					style={{ padding: 10 }}
+				>
+					<Icon name="times-circle" size={20} color="black" />
+				</TouchableOpacity>
+			</View>
+
 			<Text style={styles.title}>Tareas</Text>
 			<FlatList
 				data={tasks.filter(

@@ -486,7 +486,8 @@ export async function removeTask(id: number) {
 	}
 }
 
-export async function getTasks(filterResponsable: string) {
+export async function getTasks(filterName: string) {
+	console.log(filterName);
 	try {
 		const url = `${API_HOST}/task/getTask`;
 		const response = await fetch(url, {
@@ -494,7 +495,7 @@ export async function getTasks(filterResponsable: string) {
 			headers: {
 				"Content-Type": "application/json",
 			},
-			body: JSON.stringify({}),
+			body: JSON.stringify({ filterName }),
 		});
 		const data = await response.json();
 		console.log(data);
