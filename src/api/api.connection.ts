@@ -485,3 +485,64 @@ export async function removeTask(id: number) {
 		console.error("Error de red:", error);
 	}
 }
+
+export async function getTasks(filterResponsable: string) {
+	try {
+		const url = `${API_HOST}/task/getTask`;
+		const response = await fetch(url, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({}),
+		});
+		const data = await response.json();
+		console.log(data);
+		return data;
+	} catch (error) {
+		console.error("Error de red:", error);
+	}
+}
+
+export async function taskStatus(
+	id: number,
+	status: string,
+	date: string,
+	init: boolean,
+	responsableUser: string
+) {
+	console.log(id);
+	console.log(status);
+	console.log(date);
+	console.log(init);
+	console.log(responsableUser);
+	try {
+		const url = `${API_HOST}/task/${id}`;
+
+		const requestBody = init
+			? { status, responsableUser, startDate: date }
+			: { status, responsableUser, endDate: date };
+
+		const response = await fetch(url, {
+			method: "PUT",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(requestBody),
+		});
+
+		const data = await response.json();
+
+		console.log(data.success);
+
+		if (data.success === false) {
+			console.log("Hubo un error");
+		} else {
+			console.log("Tarea actualizada con éxito");
+		}
+
+		return data.success;
+	} catch (error) {
+		console.error("Error de red:", error);
+	}
+}

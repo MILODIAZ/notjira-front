@@ -181,6 +181,12 @@ export default function EditTeam(props) {
 
 	useEffect(() => {
 		LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
+		const timestampInMilliseconds = new Date().getTime();
+
+		// Convertir el timestamp a una cadena (string)
+		const timestampString = timestampInMilliseconds.toString();
+
+		console.log(timestampString);
 	}, []);
 
 	const [newProjectError, setNewProjectError] = useState("");

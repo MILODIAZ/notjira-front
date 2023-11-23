@@ -138,6 +138,7 @@ export default function EditProject(props) {
 				if (response == true) {
 					newTaskFormik.resetForm();
 					setAuxNewTaskBoolean(!auxNewTaskBoolean);
+					refreshPage();
 				} else {
 					setNewTaskError("Nombre de tarea ya está utilizado");
 				}

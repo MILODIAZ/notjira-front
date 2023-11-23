@@ -1,17 +1,9 @@
-import {
-	Text,
-	StyleSheet,
-	TextInput,
-	Button,
-	TouchableOpacity,
-	View,
-	FlatList,
-} from "react-native";
+import { Text, StyleSheet, TextInput, Button } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useRoute } from "@react-navigation/native";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import useAuth from "../hooks/useAuth";
 import { updateTask, removeTask } from "../api/api.connection";
@@ -72,6 +64,7 @@ export default function EditTask(props) {
 	});
 
 	async function deleteTask(id: number) {
+		setEditTaskSubmitting(true);
 		try {
 			const response = await removeTask(id);
 			console.log(response);

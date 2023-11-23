@@ -8,6 +8,7 @@ import {
 	TextInput,
 	Button,
 	TouchableOpacity,
+	LogBox,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { useFormik } from "formik";
@@ -76,9 +77,14 @@ export default function Management(props) {
 		fetchTeams();
 	}, [auxNewTeamBoolean, refresh]);
 
+	useEffect(() => {
+		LogBox.ignoreLogs(["VirtualizedLists should never be nested"]);
+	}, []);
+
 	type ItemProps = { title: string; id: number };
 
 	const goToTeam = async (id: number) => {
+		setNewTeamSubmitting(true);
 		try {
 			const teamData = await getTeam(id);
 			const teamId = teamData.data.id;
@@ -93,11 +99,16 @@ export default function Management(props) {
 			});
 		} catch (error) {
 			console.error("Error al obtener equipo:", error);
+		} finally {
+			setNewTeamSubmitting(false);
 		}
 	};
 
 	const TeamItem = ({ title, id }: ItemProps) => (
-		<TouchableOpacity onPress={() => goToTeam(id)}>
+		<TouchableOpacity
+			onPress={() => goToTeam(id)}
+			disabled={newTeamSubmitting}
+		>
 			<View style={styles.item}>
 				<Text style={styles.title}>{title}</Text>
 			</View>
