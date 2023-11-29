@@ -1,4 +1,6 @@
 import { Text, StyleSheet, TextInput, Button } from "react-native";
+import { RouteProp } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useRoute } from "@react-navigation/native";
 import { useFormik } from "formik";
@@ -8,11 +10,29 @@ import { useState } from "react";
 import useAuth from "../hooks/useAuth";
 import { updateTask, removeTask } from "../api/api.connection";
 
-export default function EditTask(props) {
+type RootStackParamList = {
+	EditTask: {
+	  taskId: number;
+	  taskName: string;
+	  taskDescription: string;
+	};
+	Management: undefined;	
+  };
+  
+  type EditTaskScreenRouteProp = RouteProp<RootStackParamList, "EditTask">;
+  type EditTaskScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "EditTask">;
+  
+  type EditTaskProps = {
+	navigation: EditTaskScreenNavigationProp;
+	route: EditTaskScreenRouteProp;
+  };
+
+export default function EditTask(props: EditTaskProps) {
 	const { navigation } = props;
 	const route = useRoute();
 	const { refreshPage, auth } = useAuth();
-	const { taskId, taskName, taskDescription } = route.params || {};
+	const routeParams = route.params as RootStackParamList["EditTask"];
+	const { taskId, taskName, taskDescription } = routeParams || {};
 
 	const [task, setTask] = useState(taskName);
 	const [editTaskSubmitting, setEditTaskSubmitting] = useState(false);
@@ -43,22 +63,19 @@ export default function EditTask(props) {
 			setEditTaskSubmitting(true);
 			const { name, description } = formValue;
 			try {
-				const response = await updateTask(
-					taskId,
-					name,
-					description,
-					auth.jwt
-				);
-				console.log(response);
-				if (response == true) {
-					editTaskFormik.values.name = name;
-					editTaskFormik.values.description = description;
-					setTask(name);
-					console.log("here in editTask");
-					refreshPage();
-				} else {
-					setEditTaskError("Nombre de proyecto ya está utilizado");
-				}
+				if (auth?.jwt) {
+					const response = await updateTask(taskId, name, description, auth.jwt);
+					console.log(response);
+					if (response === true) {
+					  editTaskFormik.values.name = name;
+					  editTaskFormik.values.description = description;
+					  setTask(name);
+					  console.log("here in editTask");
+					  refreshPage();
+					} else {
+					  setEditTaskError("Nombre de proyecto ya está utilizado");
+					}
+				  }
 			} catch (error) {
 				setEditTaskError("Error inesperado");
 			} finally {
@@ -70,14 +87,16 @@ export default function EditTask(props) {
 	async function deleteTask(id: number) {
 		setEditTaskSubmitting(true);
 		try {
-			const response = await removeTask(id, auth.jwt);
-			console.log(response);
-			if (response == true) {
-				navigation.navigate("Management");
-				refreshPage();
-			} else {
-				setEditTaskError(`Error al eliminar tarea`);
-			}
+			if (auth?.jwt) {
+				const response = await removeTask(id, auth.jwt);
+				console.log(response);
+				if (response === true) {
+				  navigation.navigate("Management");
+				  refreshPage();
+				} else {
+				  setEditTaskError(`Error al eliminar tarea`);
+				}
+			  }
 		} catch (error) {
 			setEditTaskError("Error inesperado");
 		} finally {
@@ -112,7 +131,7 @@ export default function EditTask(props) {
 			</Text>
 			<Button
 				title="Guardar cambios"
-				onPress={editTaskFormik.handleSubmit}
+				onPress={()=>editTaskFormik.handleSubmit()}
 				disabled={editTaskSubmitting}
 			/>
 

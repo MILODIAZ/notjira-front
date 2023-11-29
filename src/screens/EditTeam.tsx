@@ -8,6 +8,8 @@ import {
 	View,
 	LogBox,
 } from "react-native";
+import { RouteProp } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { useRoute } from "@react-navigation/native";
 import RNPickerSelect from "react-native-picker-select";
@@ -26,13 +28,46 @@ import {
 	createProject,
 } from "../api/api.connection";
 
-export default function EditTeam(props) {
+type RootStackParamList = {
+	EditTeam: {
+	  teamId: number;
+	  teamName: string;
+	  teamUsers: User[]; 
+	  teamProjects: Project[]; 
+	};	
+	Management: undefined;
+	EditProject: {
+	  teamId: number;
+	  projectId: number;
+	  projectName: string;
+	  projectTasks: Object[];
+	};
+  };
+  type EditTeamScreenRouteProp = RouteProp<RootStackParamList, "EditTeam">;
+  type EditTeamScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "EditTeam">;
+  type EditTeamProps = {
+	navigation: EditTeamScreenNavigationProp;
+	route: EditTeamScreenRouteProp;
+  };
+
+  interface Project {
+	id: number;
+	name: string;	
+  }
+  
+  interface User {
+	userName: string;	
+  }
+
+export default function EditTeam(props: EditTeamProps) {
 	const { navigation } = props;
 	const { refresh, refreshPage, auth } = useAuth();
 	const route = useRoute();
-	const { teamId, teamName, teamUsers, teamProjects } = route.params || {};
+	const routeParams = route.params as RootStackParamList["EditTeam"];
+const { teamId, teamName, teamUsers, teamProjects } = routeParams || {};
 
-	const [projects, setProjects] = useState(teamProjects);
+
+	const [projects, setProjects] = useState<Project[]>(teamProjects);
 	const [editTeamSubmitting, setEditTeamSubmitting] = useState(false);
 	const [editTeamError, setEditTeamError] = useState("");
 
@@ -356,7 +391,7 @@ export default function EditTeam(props) {
 				renderItem={({ item }) => (
 					<TeamItem title={item.name} id={item.id} />
 				)}
-				keyExtractor={(item) => item.name}
+				keyExtractor={(item) => item.id.toString()}
 				scrollEnabled={false}
 			/>
 
