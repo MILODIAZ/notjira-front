@@ -1,10 +1,4 @@
-import {
-	View,
-	Text,
-	StyleSheet,
-	TextInput,
-	Button,
-} from "react-native";
+import { View, Text, StyleSheet, TextInput, Button } from "react-native";
 import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -21,12 +15,12 @@ export default function PasswordRecoveryForm() {
 		onSubmit: async (formValue) => {
 			setError("");
 			setIsSubmitting(true);
-			const { username } = formValue;						
-			try{
+			const { username } = formValue;
+			try {
 				const response = await recoverPassword(username);
-				if(response.error){
+				if (response.error) {
 					setError("Usuario no registrado");
-				}else{
+				} else {
 					console.log(response);
 				}
 			} catch (error) {
@@ -50,7 +44,7 @@ export default function PasswordRecoveryForm() {
 			<Text style={styles.error}>{formik.errors.username}</Text>
 			<Button
 				title="Solicitar clave de recuperación"
-				onPress={formik.handleSubmit}
+				onPress={() => formik.handleSubmit()}
 				disabled={isSubmitting}
 			/>
 		</View>

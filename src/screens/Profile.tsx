@@ -3,14 +3,10 @@ import React from "react";
 
 import UserData from "../components/auth/UserData";
 import useAuth from "../hooks/useAuth";
-import { NavigationProp } from "@react-navigation/native";
-import { Button } from "react-native";
 
-type ProfileProps = {
-	navigation: NavigationProp<any>;
-};
+import { UserDataProps } from "../components/auth/UserData";
 
-export default function Profile(props: ProfileProps) {
+export default function Profile(props: UserDataProps) {
 	const { navigation } = props;
 
 	const { auth } = useAuth();

@@ -1,9 +1,20 @@
-import { SafeAreaView, View, Text, StyleSheet, Button } from "react-native";
+import { SafeAreaView, View, Text, StyleSheet } from "react-native";
 import React from "react";
-import { useRoute } from "@react-navigation/native";
+import { RouteProp, useRoute } from "@react-navigation/native";
 
-export default function Task(props) {
-	const route = useRoute();
+type TaskRouteParams = {
+	taskName: string;
+	taskCreator: string;
+	taskResponsable: string;
+	taskStart: string;
+	taskEnd: string;
+	taskDescription: string;
+	taskProject: string;
+};
+
+export default function Task() {
+	const route =
+		useRoute<RouteProp<Record<string, TaskRouteParams>, string>>();
 
 	const {
 		taskName,
@@ -41,7 +52,7 @@ export default function Task(props) {
 	);
 }
 
-function ItemMenu(props) {
+function ItemMenu(props: { title: string; text: string }) {
 	const { title, text } = props;
 	return (
 		<View style={styles.itemMenu}>

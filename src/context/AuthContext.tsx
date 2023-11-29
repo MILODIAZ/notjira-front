@@ -1,10 +1,23 @@
-import React, { useState, createContext } from "react";
+import React, { useState, createContext, ReactNode } from "react";
 
-export const AuthContext = createContext({
-	user: undefined,
+type AuthProviderProps = {
+	children: ReactNode;
+};
+
+interface AuthContextValue {
+	auth: userDataType | undefined;
+	login: (userData: userDataType | undefined) => void;
+	logout: () => void;
+	refreshPage: () => void;
+	refresh: boolean;
+}
+
+export const AuthContext = createContext<AuthContextValue>({
+	auth: undefined,
 	login: () => {},
 	logout: () => {},
 	refreshPage: () => {},
+	refresh: false,
 });
 
 type userDataType = {
@@ -17,12 +30,12 @@ type userDataType = {
 	jwt: string;
 };
 
-export function AuthProvider(props) {
+export function AuthProvider(props: AuthProviderProps) {
 	const { children } = props;
-	const [auth, setAuth] = useState(undefined);
+	const [auth, setAuth] = useState<userDataType | undefined>(undefined);
 	const [refresh, setRefresh] = useState(true);
 
-	const login = (userData: userDataType) => {
+	const login = (userData: userDataType | undefined) => {
 		setAuth(userData);
 	};
 

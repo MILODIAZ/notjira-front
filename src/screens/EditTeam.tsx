@@ -57,15 +57,17 @@ export default function EditTeam(props) {
 			setEditTeamSubmitting(true);
 			const { name } = formValue;
 			try {
-				const response = await updateTeam(teamId, name, auth.jwt);
-				console.log(response);
-				if (response == true) {
-					editTeamFormik.resetForm();
-					console.log("here in editTeam");
-					navigation.navigate("Management");
-					refreshPage();
-				} else {
-					setEditTeamError("Nombre de equipo ya está utilizado");
+				if (auth?.jwt) {
+					const response = await updateTeam(teamId, name, auth.jwt);
+					console.log(response);
+					if (response === true) {
+						editTeamFormik.resetForm();
+						console.log("here in editTeam");
+						navigation.navigate("Management");
+						refreshPage();
+					} else {
+						setEditTeamError("Nombre de equipo ya está utilizado");
+					}
 				}
 			} catch (error) {
 				setEditTeamError("Error inesperado");
@@ -82,17 +84,22 @@ export default function EditTeam(props) {
 		setEditTeamSubmitting(true);
 		if (selectedUsertoRemove) {
 			try {
-				const response = await removeUserFromTeam(
-					teamId,
-					selectedUsertoRemove,
-					auth.jwt
-				);
-				console.log(response);
-				if (response == true) {
-					navigation.navigate("Management");
-					refreshPage();
+				if (auth?.jwt) {
+					const response = await removeUserFromTeam(
+						teamId,
+						selectedUsertoRemove,
+						auth.jwt
+					);
+					console.log(response);
+					if (response === true) {
+						navigation.navigate("Management");
+						refreshPage();
+					} else {
+						setEditTeamError("No se pudo eliminar al participante");
+					}
 				} else {
-					setEditTeamError("No se pudo eliminar al participante");
+					// Handle the case when auth is undefined
+					setEditTeamError("Error de autenticación");
 				}
 			} catch (error) {
 				setEditTeamError("Error inesperado");
@@ -114,17 +121,19 @@ export default function EditTeam(props) {
 		setEditTeamSubmitting(true);
 		if (selectedUsertoAdd) {
 			try {
-				const response = await registerUserOnTeam(
-					teamId,
-					selectedUsertoAdd,
-					auth.jwt
-				);
-				console.log(response);
-				if (response.success == true) {
-					navigation.navigate("Management");
-					refreshPage();
-				} else {
-					setEditTeamError(`${response.error}`);
+				if (auth?.jwt) {
+					const response = await registerUserOnTeam(
+						teamId,
+						selectedUsertoAdd,
+						auth.jwt
+					);
+					console.log(response);
+					if (response.success === true) {
+						navigation.navigate("Management");
+						refreshPage();
+					} else {
+						setEditTeamError(`${response.error}`);
+					}
 				}
 			} catch (error) {
 				setEditTeamError("Error inesperado");
@@ -139,13 +148,15 @@ export default function EditTeam(props) {
 
 	async function deleteTeam(id: number) {
 		try {
-			const response = await removeTeam(id, auth.jwt);
-			console.log(response);
-			if (response == true) {
-				navigation.navigate("Management");
-				refreshPage();
-			} else {
-				setEditTeamError(`Error al eliminar equipo`);
+			if (auth?.jwt) {
+				const response = await removeTeam(id, auth.jwt);
+				console.log(response);
+				if (response === true) {
+					navigation.navigate("Management");
+					refreshPage();
+				} else {
+					setEditTeamError(`Error al eliminar equipo`);
+				}
 			}
 		} catch (error) {
 			setEditTeamError("Error inesperado");
@@ -158,16 +169,18 @@ export default function EditTeam(props) {
 
 	const goToProject = async (id: number) => {
 		try {
-			const projectData = await getProject(id, auth.jwt);
-			const projectId = projectData.data.id;
-			const projectName = projectData.data.name;
-			const projectTasks = projectData.data.tasks;
-			navigation.navigate("EditProject", {
-				teamId: teamId,
-				projectId: projectId,
-				projectName: projectName,
-				projectTasks: projectTasks,
-			});
+			if (auth?.jwt) {
+				const projectData = await getProject(id, auth.jwt);
+				const projectId = projectData.data.id;
+				const projectName = projectData.data.name;
+				const projectTasks = projectData.data.tasks;
+				navigation.navigate("EditProject", {
+					teamId: teamId,
+					projectId: projectId,
+					projectName: projectName,
+					projectTasks: projectTasks,
+				});
+			}
 		} catch (error) {
 			console.error("Error al obtener proyecto:", error);
 		}
@@ -203,13 +216,21 @@ export default function EditTeam(props) {
 			setEditTeamSubmitting(true);
 			const { name } = formValue;
 			try {
-				const response = await createProject(name, teamId, auth.jwt);
-				console.log(response);
-				if (response == true) {
-					newProjectFormik.resetForm();
-					setAuxNewProjectBoolean(!auxNewProjectBoolean);
-				} else {
-					setNewProjectError("Nombre de proyecto ya está utilizado");
+				if (auth?.jwt) {
+					const response = await createProject(
+						name,
+						teamId,
+						auth.jwt
+					);
+					console.log(response);
+					if (response == true) {
+						newProjectFormik.resetForm();
+						setAuxNewProjectBoolean(!auxNewProjectBoolean);
+					} else {
+						setNewProjectError(
+							"Nombre de proyecto ya está utilizado"
+						);
+					}
 				}
 			} catch (error) {
 				setNewProjectError("Error inesperado");
@@ -234,9 +255,11 @@ export default function EditTeam(props) {
 	useEffect(() => {
 		const fetchTeamProjects = async () => {
 			try {
-				const teamData = await getTeam(teamId, auth.jwt);
-				setProjects(teamData.data.projects);
-				console.log(refresh);
+				if (auth?.jwt) {
+					const teamData = await getTeam(teamId, auth.jwt);
+					setProjects(teamData.data.projects);
+					console.log(refresh);
+				}
 			} catch (error) {
 				console.error("Error al obtener proyectos del equipo:", error);
 			}
@@ -260,7 +283,7 @@ export default function EditTeam(props) {
 			<Text style={styles.error}>{editTeamFormik.errors.name}</Text>
 			<Button
 				title="Cambiar nombre"
-				onPress={editTeamFormik.handleSubmit}
+				onPress={() => editTeamFormik.handleSubmit()}
 				disabled={editTeamSubmitting}
 			/>
 
@@ -349,7 +372,7 @@ export default function EditTeam(props) {
 			<Text style={styles.error}>{newProjectFormik.errors.name}</Text>
 			<Button
 				title="Crear proyecto"
-				onPress={newProjectFormik.handleSubmit}
+				onPress={() => newProjectFormik.handleSubmit()}
 				disabled={editTeamSubmitting}
 			/>
 

@@ -10,6 +10,8 @@ import {
 	TouchableOpacity,
 	LogBox,
 } from "react-native";
+import { RouteProp } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import React, { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -19,10 +21,33 @@ import { getTeams } from "../api/api.connection";
 import { getTeam } from "../api/api.connection";
 import { createTeam } from "../api/api.connection";
 
-export default function Management(props) {
+export type RootStackParamList = {
+	Management: undefined;
+	EditTeam: {
+		teamId: number;
+		teamName: string;
+		teamUsers: Object[];
+		teamProjects: Object[];
+	};
+};
+type ManagementNavigationProp = NativeStackNavigationProp<RootStackParamList>;
+
+type ManagementRouteProp = RouteProp<RootStackParamList, "EditTeam">;
+
+type ManagementProps = {
+	navigation: ManagementNavigationProp;
+	route: ManagementRouteProp;
+};
+
+interface TeamItem {
+	id: number;
+	name: string;
+}
+
+export default function Management(props: ManagementProps) {
 	const { navigation } = props;
 	const { refresh, auth } = useAuth();
-	const [teams, setTeams] = useState([]);
+	const [teams, setTeams] = useState<TeamItem[]>([]);
 	const [newTeamSubmitting, setNewTeamSubmitting] = useState(false);
 	const [newTeamError, setNewTeamError] = useState("");
 	const [auxNewTeamBoolean, setAuxNewTeamBoolean] = useState(false);
@@ -36,13 +61,17 @@ export default function Management(props) {
 			setNewTeamSubmitting(true);
 			const { name } = formValue;
 			try {
-				const response = await createTeam(name, auth.jwt);
-				console.log(response);
-				if (response == true) {
-					newTeamFormik.resetForm();
-					setAuxNewTeamBoolean(!auxNewTeamBoolean);
+				if (auth?.jwt) {
+					const response = await createTeam(name, auth.jwt);
+					console.log(response);
+					if (response === true) {
+						newTeamFormik.resetForm();
+						setAuxNewTeamBoolean(!auxNewTeamBoolean);
+					} else {
+						setNewTeamError("Nombre de equipo ya está utilizado");
+					}
 				} else {
-					setNewTeamError("Nombre de equipo ya está utilizado");
+					setNewTeamError("Error de autenticación");
 				}
 			} catch (error) {
 				setNewTeamError("Error inesperado");
@@ -67,9 +96,11 @@ export default function Management(props) {
 	useEffect(() => {
 		const fetchTeams = async () => {
 			try {
-				const teamsData = await getTeams(auth.jwt);
-				setTeams(teamsData.data);
-				console.log(refresh);
+				if (auth?.jwt) {
+					const teamsData = await getTeams(auth.jwt);
+					setTeams(teamsData.data);
+					console.log(refresh);
+				}
 			} catch (error) {
 				console.error("Error al obtener equipos:", error);
 			}
@@ -86,17 +117,19 @@ export default function Management(props) {
 	const goToTeam = async (id: number) => {
 		setNewTeamSubmitting(true);
 		try {
-			const teamData = await getTeam(id, auth.jwt);
-			const teamId = teamData.data.id;
-			const teamName = teamData.data.name;
-			const teamUsers = teamData.data.users;
-			const teamProjects = teamData.data.projects;
-			navigation.navigate("EditTeam", {
-				teamId: teamId,
-				teamName: teamName,
-				teamUsers: teamUsers,
-				teamProjects: teamProjects,
-			});
+			if (auth?.jwt) {
+				const teamData = await getTeam(id, auth.jwt);
+				const teamId = teamData.data.id;
+				const teamName = teamData.data.name;
+				const teamUsers = teamData.data.users;
+				const teamProjects = teamData.data.projects;
+				navigation.navigate("EditTeam", {
+					teamId: teamId,
+					teamName: teamName,
+					teamUsers: teamUsers,
+					teamProjects: teamProjects,
+				});
+			}
 		} catch (error) {
 			console.error("Error al obtener equipo:", error);
 		} finally {
@@ -137,7 +170,7 @@ export default function Management(props) {
 			<Text style={styles.error}>{newTeamFormik.errors.name}</Text>
 			<Button
 				title="Crear equipo"
-				onPress={newTeamFormik.handleSubmit}
+				onPress={() => newTeamFormik.handleSubmit()}
 				disabled={newTeamSubmitting}
 			/>
 		</SafeAreaView>

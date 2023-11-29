@@ -2,13 +2,10 @@ import React from "react";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 import RegisterForm from "../components/auth/RegisterForm";
-import { NavigationProp } from "@react-navigation/native";
 
-type LoginProps = {
-	navigation: NavigationProp<any>;
-};
+import { RegisterFormProps } from "../components/auth/RegisterForm";
 
-export default function Register(props: LoginProps) {
+export default function Register(props: RegisterFormProps) {
 	const { navigation } = props;
 
 	return (

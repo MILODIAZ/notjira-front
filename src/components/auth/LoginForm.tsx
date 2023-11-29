@@ -1,11 +1,25 @@
 import { View, Text, StyleSheet, TextInput, Button, Image } from "react-native";
+import { RouteProp } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import useAuth from "../../hooks/useAuth";
 import { loginFetch } from "../../api/api.connection";
 
-export default function LoginForm(props) {
+type RootStackParamList = {
+	AppNavigation: undefined;
+};
+type LoginFormNavigationProp = NativeStackNavigationProp<
+	RootStackParamList,
+	"AppNavigation"
+>;
+
+export type LoginProps = {
+	navigation: LoginFormNavigationProp;
+};
+
+export default function LoginForm(props: LoginProps) {
 	const { navigation } = props;
 
 	const [error, setError] = useState("");
@@ -68,7 +82,7 @@ export default function LoginForm(props) {
 			<Text style={styles.error}>{formik.errors.password}</Text>
 			<Button
 				title="Entrar"
-				onPress={formik.handleSubmit}
+				onPress={() => formik.handleSubmit()}
 				disabled={isSubmitting}
 			/>
 		</View>

@@ -1,17 +1,25 @@
-import {
-	View,
-	Text,
-	StyleSheet,
-	TextInput,
-	Button,
-	
-} from "react-native";
+import { View, Text, StyleSheet, TextInput, Button } from "react-native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { loginFetch, register } from "../../api/api.connection";
+import { register } from "../../api/api.connection";
 
-export default function RegisterForm(props) {
+type RootStackParamList = {
+	Login: undefined;
+	Register: undefined;
+};
+
+type RegisterScreenNavigationProp = NativeStackNavigationProp<
+	RootStackParamList,
+	"Register"
+>;
+
+export interface RegisterFormProps {
+	navigation: RegisterScreenNavigationProp;
+}
+
+export default function RegisterForm(props: RegisterFormProps) {
 	const { navigation } = props;
 	const [error, setError] = useState("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
@@ -23,23 +31,30 @@ export default function RegisterForm(props) {
 		validateOnChange: false,
 		onSubmit: async (formValue) => {
 			setError("");
-			setIsSubmitting(true);			
+			setIsSubmitting(true);
 			const { name, lastName, username, password, email } = formValue;
 			try {
-				const response = await register(name, lastName, email, username, password);
-				console.log(response);
-				if(response){					
-          			formik.resetForm();
-					  navigation.navigate("Login");
-					  navigation.reset({
-					  index: 0,
-					  routes: [{ name: "Login" }]});
-				}else{
+				const response = await register(
+					name,
+					lastName,
+					email,
+					username,
+					password
+				);
+				console.log(response.result1.error);
+				if (response.result1.error) {
 					setError("Nombre de usuario ya está utilizado");
+				} else {
+					formik.resetForm();
+					navigation.navigate("Login");
+					navigation.reset({
+						index: 0,
+						routes: [{ name: "Login" }],
+					});
 				}
 			} catch (error) {
 				setError("Error inesperado");
-			} finally{
+			} finally {
 				setIsSubmitting(false);
 			}
 		},
@@ -91,7 +106,11 @@ export default function RegisterForm(props) {
 				onChangeText={(text) => formik.setFieldValue("email", text)}
 			/>
 			<Text style={styles.error}>{formik.errors.email}</Text>
-			<Button title="Registrar" onPress={formik.handleSubmit} disabled={isSubmitting}/>
+			<Button
+				title="Registrar"
+				onPress={() => formik.handleSubmit()}
+				disabled={isSubmitting}
+			/>
 		</View>
 	);
 }

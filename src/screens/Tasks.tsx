@@ -10,15 +10,58 @@ import {
 } from "react-native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import React, { useEffect, useState } from "react";
+import { RouteProp } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 import useAuth from "../hooks/useAuth";
 import { getTasks, removeTask, taskStatus } from "../api/api.connection";
 import { getDate } from "../utils/functions";
 import Icon from "react-native-vector-icons/FontAwesome5";
 
-export default function Tasks(props) {
+type RootStackParamList = {
+	Home: undefined;
+	Task: {
+		taskName: string;
+		taskDescription: string;
+		taskStart: string;
+		taskEnd: string;
+		taskResponsable: string;
+		taskCreator: string;
+		taskProject: string;
+	};
+};
+type TasksScreenNavigationProp = NativeStackNavigationProp<
+	RootStackParamList,
+	"Home"
+>;
+type TasksScreenRouteProp = RouteProp<RootStackParamList, "Home">;
+type TasksProps = {
+	navigation: TasksScreenNavigationProp;
+	route: TasksScreenRouteProp;
+};
+
+interface TaskItem {
+	id: number;
+	name: string;
+	description: string;
+	startDate: string;
+	endDate: string;
+	status: string;
+	responsable: {
+		userName: string;
+	};
+	creator: {
+		userName: string;
+	};
+	project: {
+		name: string;
+	};
+	deleted: boolean;
+}
+
+export default function Tasks(props: TasksProps) {
 	const { navigation } = props;
-	const [tasks, setTasks] = useState([]);
+	const [tasks, setTasks] = useState<TaskItem[]>([]);
 	const [editTaskSubmitting, setEditTaskSubmitting] = useState(false);
 	const [editTaskError, setEditTaskError] = useState("");
 
@@ -29,13 +72,16 @@ export default function Tasks(props) {
 	useEffect(() => {
 		const fetchTeams = async () => {
 			try {
-				const taskData = await getTasks(filterName, auth.jwt);
+				const jwt = auth?.jwt || "";
+
+				const taskData = await getTasks(filterName, jwt);
 				setTasks(taskData.data);
 				console.log(refresh);
 			} catch (error) {
 				console.error("Error al obtener tareas:", error);
 			}
 		};
+
 		fetchTeams();
 	}, [refresh]);
 
@@ -45,17 +91,23 @@ export default function Tasks(props) {
 
 	async function changeTaskStatus(id: number, status: string, init: boolean) {
 		setEditTaskSubmitting(true);
+
 		try {
+			const userName = auth?.userName || "";
+			const jwt = auth?.jwt || "";
+
 			const response = await taskStatus(
 				id,
 				status,
 				getDate(),
 				init,
-				auth.userName,
-				auth.jwt
+				userName,
+				jwt
 			);
+
 			console.log(response);
-			if (response == true) {
+
+			if (response === true) {
 				refreshPage();
 			} else {
 				setEditTaskError(`Error al eliminar tarea`);
@@ -71,9 +123,12 @@ export default function Tasks(props) {
 		setEditTaskSubmitting(true);
 
 		try {
-			const response = await removeTask(id, auth.jwt);
+			const jwt = auth?.jwt || "";
+
+			const response = await removeTask(id, jwt);
 			console.log(response);
-			if (response == true) {
+
+			if (response === true) {
 				refreshPage();
 			} else {
 				setEditTaskError(`Error al eliminar tarea`);
@@ -267,13 +322,13 @@ export default function Tasks(props) {
 			</View>
 
 			<Text style={styles.title}>Tareas</Text>
-			<FlatList
+			<FlatList<TaskItem>
 				data={tasks.filter(
 					(item) =>
 						!item.deleted &&
 						item.status === "en progreso" &&
 						item.responsable != null &&
-						item.responsable.userName === auth.userName
+						item.responsable.userName === auth?.userName
 				)}
 				renderItem={({ item }) => (
 					<InProgressTaskItem
@@ -287,7 +342,7 @@ export default function Tasks(props) {
 						project={item.project.name}
 					/>
 				)}
-				keyExtractor={(item) => item.id}
+				keyExtractor={(item) => item.id.toString()}
 			/>
 
 			<Text style={styles.title}>Pendientes</Text>
@@ -307,7 +362,7 @@ export default function Tasks(props) {
 						project={item.project.name}
 					/>
 				)}
-				keyExtractor={(item) => item.id}
+				keyExtractor={(item) => item.id.toString()}
 			/>
 
 			<Text style={styles.title}>Completadas</Text>
@@ -317,7 +372,7 @@ export default function Tasks(props) {
 						!item.deleted &&
 						item.status === "finalizada" &&
 						item.responsable != null &&
-						item.responsable.userName === auth.userName
+						item.responsable.userName === auth?.userName
 				)}
 				renderItem={({ item }) => (
 					<FinishedTaskItem
@@ -331,7 +386,7 @@ export default function Tasks(props) {
 						project={item.project.name}
 					/>
 				)}
-				keyExtractor={(item) => item.id}
+				keyExtractor={(item) => item.id.toString()}
 			/>
 		</KeyboardAwareScrollView>
 	);

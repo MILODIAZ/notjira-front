@@ -1,8 +1,26 @@
 import { View, Text, StyleSheet, Button } from "react-native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RouteProp } from "@react-navigation/native";
 import React from "react";
 import useAuth from "../../hooks/useAuth";
 
-export default function UserData(props) {
+type RootStackParamList = {
+	SignInNavigation: undefined;
+	EditProfile: undefined;
+};
+type UserDataScreenNavigationProp = NativeStackNavigationProp<
+	RootStackParamList,
+	"SignInNavigation"
+>;
+type UserDataScreenRouteProp = RouteProp<
+	RootStackParamList,
+	"SignInNavigation"
+>;
+export interface UserDataProps {
+	navigation: UserDataScreenNavigationProp;
+}
+
+export default function UserData(props: UserDataProps) {
 	const { navigation } = props;
 
 	const { auth, logout } = useAuth();
@@ -17,23 +35,19 @@ export default function UserData(props) {
 				<Text style={styles.title}>Bienvenid@,</Text>
 				<Text
 					style={styles.title}
-				>{`${auth.name} ${auth.lastName}`}</Text>
+				>{`${auth?.name} ${auth?.lastName}`}</Text>
 			</View>
 
 			<View style={styles.dataContent}>
 				<ItemMenu
 					title="Nombre:"
-					text={`${auth.name} ${auth.lastName}`}
+					text={`${auth?.name} ${auth?.lastName}`}
 				/>
-				<ItemMenu title="Username:" text={auth.userName} />
-				<ItemMenu title="Email:" text={auth.email} />
+				<ItemMenu title="Username:" text={`${auth?.userName}`} />
+				<ItemMenu title="Email:" text={`${auth?.email}`} />
 			</View>
 
-			<Button
-				style={styles.editBtn}
-				title="Editar"
-				onPress={editNavigation}
-			/>
+			<Button title="Editar" onPress={editNavigation} />
 
 			<Button
 				title="Desconectarse"
@@ -45,13 +59,12 @@ export default function UserData(props) {
 						routes: [{ name: "SignInNavigation" }],
 					});
 				}}
-				style={styles.btnLogout}
 			/>
 		</View>
 	);
 }
 
-function ItemMenu(props) {
+function ItemMenu(props: { title: string; text: string }) {
 	const { title, text } = props;
 	return (
 		<View style={styles.itemMenu}>
