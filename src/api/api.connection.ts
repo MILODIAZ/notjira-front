@@ -74,33 +74,40 @@ export async function getUserInfo(userId: number) {
 	}
 }
 
-export async function saveUserChanges(
-	currentUserName: string,
+export async function updateUser(
+	oldUserName: string,
+	userName: string,
 	name: string,
 	lastName: string,
-	userName: string
+	email: string,
+	jwt: string
 ) {
 	try {
-		const url = `${API_HOST}/user/${currentUserName}`;
-		const requestBody = JSON.stringify({
-			name,
-			lastName,
-			userName,
-		});
-		console.log(requestBody);
-		const respuesta = await fetch(url, {
+		const url = `${API_HOST}/user/${oldUserName}`;
+		const response = await fetch(url, {
 			method: "PUT",
 			headers: {
 				"Content-Type": "application/json",
+				Authorization: `Bearer ${jwt}`,
 			},
-			body: requestBody,
+			body: JSON.stringify({
+				name,
+				lastName,
+				userName,
+				email,
+			}),
 		});
-		console.log(respuesta);
-		if (respuesta.ok) {
-			console.log("Datos de usuario guardados con éxito");
+
+		const data = await response.json();
+
+		console.log(data);
+
+		if (data.success == false) {
+			console.log("Hubo un error");
 		} else {
-			console.error("Error al enviar datos de usuario al backend");
+			console.log("Perfil actualizado con éxito");
 		}
+		return data;
 	} catch (error) {
 		console.error("Error de red:", error);
 	}
@@ -569,6 +576,43 @@ export async function taskStatus(
 			console.log("Tarea actualizada con éxito");
 		}
 
+		return data.success;
+	} catch (error) {
+		console.error("Error de red:", error);
+	}
+}
+
+export async function createComment(
+	content: string,
+	userName: string,
+	taskId: number,
+	jwt: string
+) {
+	console.log(taskId);
+	try {
+		const url = `${API_HOST}/comment`;
+		const response = await fetch(url, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${jwt}`,
+			},
+			body: JSON.stringify({
+				content,
+				taskId,
+				userName,
+			}),
+		});
+
+		const data = await response.json();
+
+		console.log(data);
+
+		if (data.success == false) {
+			console.log("Hubo un error");
+		} else {
+			console.log("Comentario guardado con éxito");
+		}
 		return data.success;
 	} catch (error) {
 		console.error("Error de red:", error);

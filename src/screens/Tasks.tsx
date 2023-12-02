@@ -21,6 +21,7 @@ import Icon from "react-native-vector-icons/FontAwesome5";
 type RootStackParamList = {
 	Home: undefined;
 	Task: {
+		taskId: number;
 		taskName: string;
 		taskDescription: string;
 		taskStart: string;
@@ -28,6 +29,7 @@ type RootStackParamList = {
 		taskResponsable: string;
 		taskCreator: string;
 		taskProject: string;
+		taskComments: Comment[];
 	};
 };
 type TasksScreenNavigationProp = NativeStackNavigationProp<
@@ -39,6 +41,12 @@ type TasksProps = {
 	navigation: TasksScreenNavigationProp;
 	route: TasksScreenRouteProp;
 };
+
+export interface Comment {
+	id: number;
+	content: string;
+	user: { userName: string };
+}
 
 interface TaskItem {
 	id: number;
@@ -57,6 +65,7 @@ interface TaskItem {
 		name: string;
 	};
 	deleted: boolean;
+	comments: Comment[];
 }
 
 export default function Tasks(props: TasksProps) {
@@ -149,6 +158,7 @@ export default function Tasks(props: TasksProps) {
 		responsable: string;
 		creator: string;
 		project: string;
+		comments: Comment[];
 	};
 
 	const PendingTaskItem = ({
@@ -160,19 +170,24 @@ export default function Tasks(props: TasksProps) {
 		responsable,
 		creator,
 		project,
+		comments,
 	}: ItemProps) => (
 		<TouchableOpacity
-			onPress={() =>
+			onPress={() => {
+				console.log(comments);
+
 				goToTask(
+					id,
 					title,
 					description,
 					startDate,
 					endDate,
 					responsable,
 					creator,
-					project
-				)
-			}
+					project,
+					comments
+				);
+			}}
 			disabled={editTaskSubmitting}
 		>
 			<View style={styles.item}>
@@ -197,19 +212,24 @@ export default function Tasks(props: TasksProps) {
 		responsable,
 		creator,
 		project,
+		comments,
 	}: ItemProps) => (
 		<TouchableOpacity
-			onPress={() =>
+			onPress={() => {
+				console.log(comments);
+
 				goToTask(
+					id,
 					title,
 					description,
 					startDate,
 					endDate,
 					responsable,
 					creator,
-					project
-				)
-			}
+					project,
+					comments
+				);
+			}}
 			disabled={editTaskSubmitting}
 		>
 			<View style={styles.item2}>
@@ -234,17 +254,20 @@ export default function Tasks(props: TasksProps) {
 		responsable,
 		creator,
 		project,
+		comments,
 	}: ItemProps) => (
 		<TouchableOpacity
 			onPress={() =>
 				goToTask(
+					id,
 					title,
 					description,
 					startDate,
 					endDate,
 					responsable,
 					creator,
-					project
+					project,
+					comments
 				)
 			}
 			disabled={editTaskSubmitting}
@@ -263,15 +286,18 @@ export default function Tasks(props: TasksProps) {
 	);
 
 	function goToTask(
+		id: number,
 		name: string,
 		description: string,
 		startDate: string,
 		endDate: string,
 		responsable: string,
 		creator: string,
-		project: string
+		project: string,
+		comments: Comment[]
 	) {
 		navigation.navigate("Task", {
+			taskId: id,
 			taskName: name,
 			taskDescription: description,
 			taskStart: startDate,
@@ -279,6 +305,7 @@ export default function Tasks(props: TasksProps) {
 			taskResponsable: responsable,
 			taskCreator: creator,
 			taskProject: project,
+			taskComments: comments,
 		});
 	}
 
@@ -340,6 +367,7 @@ export default function Tasks(props: TasksProps) {
 						responsable={item.responsable.userName}
 						creator={item.creator.userName}
 						project={item.project.name}
+						comments={item.comments}
 					/>
 				)}
 				keyExtractor={(item) => item.id.toString()}
@@ -360,6 +388,7 @@ export default function Tasks(props: TasksProps) {
 						responsable="-"
 						creator={item.creator.userName}
 						project={item.project.name}
+						comments={item.comments}
 					/>
 				)}
 				keyExtractor={(item) => item.id.toString()}
@@ -384,6 +413,7 @@ export default function Tasks(props: TasksProps) {
 						responsable={item.responsable.userName}
 						creator={item.creator.userName}
 						project={item.project.name}
+						comments={item.comments}
 					/>
 				)}
 				keyExtractor={(item) => item.id.toString()}
