@@ -1,4 +1,5 @@
-import { View, Text, StyleSheet, TextInput, Button } from "react-native";
+import { Text, TextInput, Button } from "react-native-paper";
+import { View, StyleSheet } from "react-native";
 import React, { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -31,22 +32,26 @@ export default function PasswordRecoveryForm() {
 		},
 	});
 	return (
-		<View>
+		<View style={{ paddingHorizontal: 20 }}>
 			<Text style={styles.title}>Recuperar contraseña</Text>
 			<Text style={styles.error}>{error}</Text>
 			<TextInput
 				placeholder="Nombre de usuario"
-				style={styles.input}
+				label="Nombre de usuario"
 				autoCapitalize="none"
 				value={formik.values.username}
 				onChangeText={(text) => formik.setFieldValue("username", text)}
 			/>
 			<Text style={styles.error}>{formik.errors.username}</Text>
 			<Button
-				title="Solicitar clave de recuperación"
+				mode="contained"
 				onPress={() => formik.handleSubmit()}
 				disabled={isSubmitting}
-			/>
+				loading={isSubmitting}
+				style={{ borderRadius: 0 }}
+			>
+				Solicitar clave de recuperación
+			</Button>
 		</View>
 	);
 }

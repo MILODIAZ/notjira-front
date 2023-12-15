@@ -1,12 +1,12 @@
+import { StyleSheet, TouchableOpacity, View, FlatList } from "react-native";
 import {
 	Text,
-	StyleSheet,
 	TextInput,
 	Button,
-	TouchableOpacity,
-	View,
-	FlatList,
-} from "react-native";
+	Card,
+	Avatar,
+	Divider,
+} from "react-native-paper";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RouteProp } from "@react-navigation/native";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -26,31 +26,39 @@ import {
 
 type RootStackParamList = {
 	EditTeam: {
-	  teamId: number;
-	  teamName: string;
-	  teamUsers: Object[];
-	  teamProjects: Object[];
+		teamId: number;
+		teamName: string;
+		teamUsers: Object[];
+		teamProjects: Object[];
 	};
 	Management: undefined;
 	EditProject: {
-	  projectId: number;
-	  projectName: string;
-	  projectTasks: { id: number; name: string; description: string; deleted?: boolean }[];
+		projectId: number;
+		projectName: string;
+		projectTasks: {
+			id: number;
+			name: string;
+			description: string;
+			deleted?: boolean;
+		}[];
 	};
 	EditTask: {
-	  taskId: number;
-	  taskName: string;
-	  taskDescription: string;
+		taskId: number;
+		taskName: string;
+		taskDescription: string;
 	};
-  };
+};
 
-  type EditProjectScreenRouteProp = RouteProp<RootStackParamList, "EditProject">;
-  type EditProjectScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "EditProject">;
+type EditProjectScreenRouteProp = RouteProp<RootStackParamList, "EditProject">;
+type EditProjectScreenNavigationProp = NativeStackNavigationProp<
+	RootStackParamList,
+	"EditProject"
+>;
 
-  type EditProjectProps = {
+type EditProjectProps = {
 	navigation: EditProjectScreenNavigationProp;
 	route: EditProjectScreenRouteProp;
-  };
+};
 
 export default function EditProject(props: EditProjectProps) {
 	const { navigation } = props;
@@ -87,17 +95,23 @@ export default function EditProject(props: EditProjectProps) {
 			const { name } = formValue;
 			try {
 				if (auth?.jwt) {
-					const response = await updateProject(projectId, name, auth.jwt);
+					const response = await updateProject(
+						projectId,
+						name,
+						auth.jwt
+					);
 					console.log(response);
 					if (response === true) {
-					  editProjectFormik.resetForm();
-					  console.log("here in editProject");
-					  setAuxEditProjectBoolean(!auxEditProjectBoolean);
-					  refreshPage();
+						editProjectFormik.resetForm();
+						console.log("here in editProject");
+						setAuxEditProjectBoolean(!auxEditProjectBoolean);
+						refreshPage();
 					} else {
-					  setEditProjectError("Nombre de proyecto ya está utilizado");
+						setEditProjectError(
+							"Nombre de proyecto ya está utilizado"
+						);
 					}
-				  }
+				}
 			} catch (error) {
 				setEditProjectError("Error inesperado");
 			} finally {
@@ -108,17 +122,16 @@ export default function EditProject(props: EditProjectProps) {
 
 	async function deleteProject(id: number) {
 		try {
-			if(auth?.jwt){
+			if (auth?.jwt) {
 				const response = await removeProject(id, auth.jwt);
-			console.log(response);
-			if (response == true) {
-				navigation.navigate("Management");
-				refreshPage();
-			} else {
-				setEditProjectError(`Error al eliminar proyecto`);
+				console.log(response);
+				if (response == true) {
+					navigation.navigate("Management");
+					refreshPage();
+				} else {
+					setEditProjectError(`Error al eliminar proyecto`);
+				}
 			}
-			}
-			
 		} catch (error) {
 			setEditProjectError("Error inesperado");
 		} finally {
@@ -130,7 +143,7 @@ export default function EditProject(props: EditProjectProps) {
 
 	const goToTask = async (id: number) => {
 		try {
-			if(auth?.jwt){
+			if (auth?.jwt) {
 				const taskData = await getTask(id, auth.jwt);
 				const taskId = taskData.data.id;
 				const taskName = taskData.data.name;
@@ -141,18 +154,22 @@ export default function EditProject(props: EditProjectProps) {
 					taskDescription: taskDescription,
 				});
 			}
-			
 		} catch (error) {
 			console.error("Error al obtener tarea:", error);
 		}
 	};
 
 	const TeamItem = ({ title, id }: ItemProps) => (
-		<TouchableOpacity onPress={() => goToTask(id)}>
-			<View style={styles.item}>
-				<Text style={styles.title}>{title}</Text>
-			</View>
-		</TouchableOpacity>
+		<Card mode="outlined">
+			<Card.Title
+				title={title}
+				left={(props) => <Avatar.Icon {...props} icon="pen" />}
+				titleVariant="headlineMedium"
+			/>
+			<Card.Actions>
+				<Button onPress={() => goToTask(id)}>Editar</Button>
+			</Card.Actions>
+		</Card>
 	);
 
 	const [newTaskError, setNewTaskError] = useState("");
@@ -169,21 +186,21 @@ export default function EditProject(props: EditProjectProps) {
 			try {
 				if (auth?.jwt && auth?.userName) {
 					const response = await createTask(
-					  projectId,
-					  auth.userName,
-					  name,
-					  description,
-					  auth.jwt
+						projectId,
+						auth.userName,
+						name,
+						description,
+						auth.jwt
 					);
 					console.log(response);
 					if (response === true) {
-					  newTaskFormik.resetForm();
-					  setAuxNewTaskBoolean(!auxNewTaskBoolean);
-					  refreshPage();
+						newTaskFormik.resetForm();
+						setAuxNewTaskBoolean(!auxNewTaskBoolean);
+						refreshPage();
 					} else {
-					  setNewTaskError("Nombre de tarea ya está utilizado");
+						setNewTaskError("Nombre de tarea ya está utilizado");
 					}
-				  } 
+				}
 			} catch (error) {
 				setNewTaskError("Error inesperado");
 			} finally {
@@ -209,12 +226,12 @@ export default function EditProject(props: EditProjectProps) {
 	useEffect(() => {
 		const fetchProject = async () => {
 			try {
-				if(auth?.jwt){
+				if (auth?.jwt) {
 					const projectData = await getProject(projectId, auth.jwt);
 					setProject(projectData.data.name);
 					setTasks(projectData.data.tasks);
 					console.log(refresh);
-				}				
+				}
 			} catch (error) {
 				console.error("Error al obtener proyecto:", error);
 			}
@@ -223,12 +240,21 @@ export default function EditProject(props: EditProjectProps) {
 	}, [refresh, auxEditProjectBoolean, auxNewTaskBoolean]);
 
 	return (
-		<KeyboardAwareScrollView>
-			<Text style={styles.title}>{project}</Text>
+		<KeyboardAwareScrollView style={{ paddingHorizontal: 8 }}>
+			<Text
+				variant="headlineLarge"
+				style={{
+					textAlign: "center",
+					marginTop: 20,
+					fontWeight: "bold",
+				}}
+			>
+				{project}
+			</Text>
 
 			<Text style={styles.error}>{editProjectError}</Text>
 			<TextInput
-				style={styles.input}
+				label="Nuevo nombre"
 				onChangeText={(text) =>
 					editProjectFormik.setFieldValue("name", text)
 				}
@@ -237,12 +263,27 @@ export default function EditProject(props: EditProjectProps) {
 			/>
 			<Text style={styles.error}>{editProjectFormik.errors.name}</Text>
 			<Button
-				title="Cambiar nombre"
-				onPress={()=>editProjectFormik.handleSubmit()}
+				mode="contained"
+				onPress={() => editProjectFormik.handleSubmit()}
 				disabled={editProjectSubmitting}
-			/>
+				loading={editProjectSubmitting}
+				style={{ borderRadius: 0 }}
+			>
+				Cambiar nombre
+			</Button>
 
-			<Text style={styles.title}>Tareas</Text>
+			<Divider bold={true} style={{ marginTop: 30, marginBottom: 30 }} />
+
+			<Text
+				variant="headlineLarge"
+				style={{
+					textAlign: "center",
+					marginBottom: 20,
+					fontWeight: "bold",
+				}}
+			>
+				Tareas
+			</Text>
 			<FlatList
 				data={tasks.filter((item) => !item.deleted)}
 				renderItem={({ item }) => (
@@ -253,7 +294,7 @@ export default function EditProject(props: EditProjectProps) {
 			/>
 			<Text style={styles.error}>{newTaskError}</Text>
 			<TextInput
-				style={styles.input}
+				label="Nombre de la tarea"
 				onChangeText={(text) =>
 					newTaskFormik.setFieldValue("name", text)
 				}
@@ -262,7 +303,7 @@ export default function EditProject(props: EditProjectProps) {
 			/>
 			<Text style={styles.error}>{newTaskFormik.errors.name}</Text>
 			<TextInput
-				style={styles.input}
+				label="Descripción de la tarea"
 				onChangeText={(text) =>
 					newTaskFormik.setFieldValue("description", text)
 				}
@@ -271,17 +312,25 @@ export default function EditProject(props: EditProjectProps) {
 			/>
 			<Text style={styles.error}>{newTaskFormik.errors.description}</Text>
 			<Button
-				title="Crear Tarea"
-				onPress={()=>newTaskFormik.handleSubmit()}
+				mode="contained"
+				onPress={() => newTaskFormik.handleSubmit()}
 				disabled={editProjectSubmitting}
-			/>
+				loading={editProjectSubmitting}
+				style={{ borderRadius: 0 }}
+			>
+				Crear tarea
+			</Button>
 
 			<Button
-				title="ELIMINAR PROYECTO"
+				mode="contained"
 				onPress={() => deleteProject(projectId)}
 				disabled={editProjectSubmitting}
-				color="red"
-			/>
+				loading={editProjectSubmitting}
+				buttonColor="red"
+				style={{ borderRadius: 0 }}
+			>
+				ELIMINAR PROYECTO
+			</Button>
 		</KeyboardAwareScrollView>
 	);
 }

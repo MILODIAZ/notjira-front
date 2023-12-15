@@ -3,13 +3,11 @@ import {
 	SafeAreaView,
 	StyleSheet,
 	View,
-	Text,
 	StatusBar,
-	TextInput,
-	Button,
 	TouchableOpacity,
 	LogBox,
 } from "react-native";
+import { Button, TextInput, Text, Card, Avatar } from "react-native-paper";
 import { RouteProp } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import React, { useState, useEffect } from "react";
@@ -20,6 +18,7 @@ import useAuth from "../hooks/useAuth";
 import { getTeams } from "../api/api.connection";
 import { getTeam } from "../api/api.connection";
 import { createTeam } from "../api/api.connection";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 export type RootStackParamList = {
 	Management: undefined;
@@ -138,19 +137,39 @@ export default function Management(props: ManagementProps) {
 	};
 
 	const TeamItem = ({ title, id }: ItemProps) => (
-		<TouchableOpacity
-			onPress={() => goToTeam(id)}
-			disabled={newTeamSubmitting}
-		>
-			<View style={styles.item}>
-				<Text style={styles.title}>{title}</Text>
-			</View>
-		</TouchableOpacity>
+		<Card mode="outlined">
+			<Card.Title
+				title={title}
+				left={(props) => (
+					<Avatar.Icon {...props} icon="account-group" />
+				)}
+				titleVariant="headlineMedium"
+			/>
+			<Card.Actions>
+				<Button
+					onPress={() => goToTeam(id)}
+					disabled={newTeamSubmitting}
+					loading={newTeamSubmitting}
+				>
+					Editar
+				</Button>
+			</Card.Actions>
+		</Card>
 	);
 
 	return (
-		<SafeAreaView>
-			<Text style={styles.title}>Equipos</Text>
+		<KeyboardAwareScrollView style={{ paddingHorizontal: 8 }}>
+			<Text
+				variant="headlineLarge"
+				style={{
+					textAlign: "center",
+					marginBottom: 20,
+					marginTop: 40,
+					fontWeight: "bold",
+				}}
+			>
+				Equipos
+			</Text>
 			<FlatList
 				data={teams}
 				renderItem={({ item }) => (
@@ -160,7 +179,7 @@ export default function Management(props: ManagementProps) {
 			/>
 			<Text style={styles.error}>{newTeamError}</Text>
 			<TextInput
-				style={styles.input}
+				label="Nombre del equipo"
 				onChangeText={(text) =>
 					newTeamFormik.setFieldValue("name", text)
 				}
@@ -168,12 +187,17 @@ export default function Management(props: ManagementProps) {
 				value={newTeamFormik.values.name}
 			/>
 			<Text style={styles.error}>{newTeamFormik.errors.name}</Text>
+
 			<Button
-				title="Crear equipo"
+				mode="contained"
 				onPress={() => newTeamFormik.handleSubmit()}
 				disabled={newTeamSubmitting}
-			/>
-		</SafeAreaView>
+				loading={newTeamSubmitting}
+				style={{ borderRadius: 0 }}
+			>
+				Crear equipo
+			</Button>
+		</KeyboardAwareScrollView>
 	);
 }
 

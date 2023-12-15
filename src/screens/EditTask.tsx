@@ -1,4 +1,5 @@
-import { Text, StyleSheet, TextInput, Button } from "react-native";
+import { StyleSheet } from "react-native";
+import { Text, TextInput, Button } from "react-native-paper";
 import { RouteProp } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -12,20 +13,23 @@ import { updateTask, removeTask } from "../api/api.connection";
 
 type RootStackParamList = {
 	EditTask: {
-	  taskId: number;
-	  taskName: string;
-	  taskDescription: string;
+		taskId: number;
+		taskName: string;
+		taskDescription: string;
 	};
-	Management: undefined;	
-  };
-  
-  type EditTaskScreenRouteProp = RouteProp<RootStackParamList, "EditTask">;
-  type EditTaskScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "EditTask">;
-  
-  type EditTaskProps = {
+	Management: undefined;
+};
+
+type EditTaskScreenRouteProp = RouteProp<RootStackParamList, "EditTask">;
+type EditTaskScreenNavigationProp = NativeStackNavigationProp<
+	RootStackParamList,
+	"EditTask"
+>;
+
+type EditTaskProps = {
 	navigation: EditTaskScreenNavigationProp;
 	route: EditTaskScreenRouteProp;
-  };
+};
 
 export default function EditTask(props: EditTaskProps) {
 	const { navigation } = props;
@@ -64,18 +68,25 @@ export default function EditTask(props: EditTaskProps) {
 			const { name, description } = formValue;
 			try {
 				if (auth?.jwt) {
-					const response = await updateTask(taskId, name, description, auth.jwt);
+					const response = await updateTask(
+						taskId,
+						name,
+						description,
+						auth.jwt
+					);
 					console.log(response);
 					if (response === true) {
-					  editTaskFormik.values.name = name;
-					  editTaskFormik.values.description = description;
-					  setTask(name);
-					  console.log("here in editTask");
-					  refreshPage();
+						editTaskFormik.values.name = name;
+						editTaskFormik.values.description = description;
+						setTask(name);
+						console.log("here in editTask");
+						refreshPage();
 					} else {
-					  setEditTaskError("Nombre de proyecto ya está utilizado");
+						setEditTaskError(
+							"Nombre de proyecto ya está utilizado"
+						);
 					}
-				  }
+				}
 			} catch (error) {
 				setEditTaskError("Error inesperado");
 			} finally {
@@ -91,12 +102,12 @@ export default function EditTask(props: EditTaskProps) {
 				const response = await removeTask(id, auth.jwt);
 				console.log(response);
 				if (response === true) {
-				  navigation.navigate("Management");
-				  refreshPage();
+					navigation.navigate("Management");
+					refreshPage();
 				} else {
-				  setEditTaskError(`Error al eliminar tarea`);
+					setEditTaskError(`Error al eliminar tarea`);
 				}
-			  }
+			}
 		} catch (error) {
 			setEditTaskError("Error inesperado");
 		} finally {
@@ -105,12 +116,21 @@ export default function EditTask(props: EditTaskProps) {
 	}
 
 	return (
-		<KeyboardAwareScrollView>
-			<Text style={styles.title}>{task}</Text>
+		<KeyboardAwareScrollView style={{ paddingHorizontal: 8 }}>
+			<Text
+				variant="headlineLarge"
+				style={{
+					textAlign: "center",
+					marginTop: 20,
+					fontWeight: "bold",
+				}}
+			>
+				{task}
+			</Text>
 
 			<Text style={styles.error}>{editTaskError}</Text>
 			<TextInput
-				style={styles.input}
+				label="Nombre de la tarea"
 				onChangeText={(text) =>
 					editTaskFormik.setFieldValue("name", text)
 				}
@@ -119,7 +139,7 @@ export default function EditTask(props: EditTaskProps) {
 			/>
 			<Text style={styles.error}>{editTaskFormik.errors.name}</Text>
 			<TextInput
-				style={styles.input}
+				label="Descripción de tarea"
 				onChangeText={(text) =>
 					editTaskFormik.setFieldValue("description", text)
 				}
@@ -130,17 +150,25 @@ export default function EditTask(props: EditTaskProps) {
 				{editTaskFormik.errors.description}
 			</Text>
 			<Button
-				title="Guardar cambios"
-				onPress={()=>editTaskFormik.handleSubmit()}
+				mode="contained"
+				onPress={() => editTaskFormik.handleSubmit()}
 				disabled={editTaskSubmitting}
-			/>
+				loading={editTaskSubmitting}
+				style={{ borderRadius: 0 }}
+			>
+				Guardar cambios
+			</Button>
 
 			<Button
-				title="ELIMINAR TAREA"
+				mode="contained"
 				onPress={() => deleteTask(taskId)}
 				disabled={editTaskSubmitting}
-				color="red"
-			/>
+				loading={editTaskSubmitting}
+				buttonColor="red"
+				style={{ borderRadius: 0 }}
+			>
+				ELIMINAR TAREA
+			</Button>
 		</KeyboardAwareScrollView>
 	);
 }

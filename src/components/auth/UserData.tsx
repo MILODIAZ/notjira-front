@@ -77,7 +77,7 @@ function ItemMenu(props: { title: string; text: string }) {
 const styles = StyleSheet.create({
 	content: {
 		marginHorizontal: 20,
-		marginTop: 20,
+		marginTop: 50,
 	},
 	titleBlock: {
 		marginBottom: 30,

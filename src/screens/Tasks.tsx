@@ -1,5 +1,4 @@
 import {
-	Text,
 	StyleSheet,
 	StatusBar,
 	TouchableOpacity,
@@ -17,6 +16,7 @@ import useAuth from "../hooks/useAuth";
 import { getTasks, removeTask, taskStatus } from "../api/api.connection";
 import { getDate } from "../utils/functions";
 import Icon from "react-native-vector-icons/FontAwesome5";
+import { Avatar, Button, Card, Divider, Text } from "react-native-paper";
 
 type RootStackParamList = {
 	Home: undefined;
@@ -172,35 +172,43 @@ export default function Tasks(props: TasksProps) {
 		project,
 		comments,
 	}: ItemProps) => (
-		<TouchableOpacity
-			onPress={() => {
-				console.log(comments);
+		<Card mode="outlined">
+			<Card.Title
+				title={title}
+				left={(props) => <Avatar.Icon {...props} icon="pen" />}
+				titleVariant="headlineMedium"
+			/>
+			<Card.Actions>
+				<Button
+					onPress={() => {
+						console.log(comments);
 
-				goToTask(
-					id,
-					title,
-					description,
-					startDate,
-					endDate,
-					responsable,
-					creator,
-					project,
-					comments
-				);
-			}}
-			disabled={editTaskSubmitting}
-		>
-			<View style={styles.item}>
-				<Text style={styles.title}>{title}</Text>
-				<TouchableOpacity
+						goToTask(
+							id,
+							title,
+							description,
+							startDate,
+							endDate,
+							responsable,
+							creator,
+							project,
+							comments
+						);
+					}}
+					disabled={editTaskSubmitting}
+				>
+					Detalle
+				</Button>
+				<Button
 					onPress={() => changeTaskStatus(id, "en progreso", true)}
 					disabled={editTaskSubmitting}
-					style={styles.button}
+					loading={editTaskSubmitting}
+					buttonColor="#d06aff"
 				>
-					<Text>Tomar</Text>
-				</TouchableOpacity>
-			</View>
-		</TouchableOpacity>
+					Tomar
+				</Button>
+			</Card.Actions>
+		</Card>
 	);
 
 	const InProgressTaskItem = ({
@@ -214,35 +222,43 @@ export default function Tasks(props: TasksProps) {
 		project,
 		comments,
 	}: ItemProps) => (
-		<TouchableOpacity
-			onPress={() => {
-				console.log(comments);
+		<Card mode="outlined">
+			<Card.Title
+				title={title}
+				left={(props) => <Avatar.Icon {...props} icon="pen" />}
+				titleVariant="headlineMedium"
+			/>
+			<Card.Actions>
+				<Button
+					onPress={() => {
+						console.log(comments);
 
-				goToTask(
-					id,
-					title,
-					description,
-					startDate,
-					endDate,
-					responsable,
-					creator,
-					project,
-					comments
-				);
-			}}
-			disabled={editTaskSubmitting}
-		>
-			<View style={styles.item2}>
-				<Text style={styles.title}>{title}</Text>
-				<TouchableOpacity
-					onPress={() => changeTaskStatus(id, "finalizada", false)}
-					style={styles.button2}
+						goToTask(
+							id,
+							title,
+							description,
+							startDate,
+							endDate,
+							responsable,
+							creator,
+							project,
+							comments
+						);
+					}}
 					disabled={editTaskSubmitting}
 				>
-					<Text>Finalizar</Text>
-				</TouchableOpacity>
-			</View>
-		</TouchableOpacity>
+					Detalle
+				</Button>
+				<Button
+					onPress={() => changeTaskStatus(id, "finalizada", false)}
+					disabled={editTaskSubmitting}
+					loading={editTaskSubmitting}
+					buttonColor="#7052ff"
+				>
+					Finalizar
+				</Button>
+			</Card.Actions>
+		</Card>
 	);
 
 	const FinishedTaskItem = ({
@@ -256,33 +272,41 @@ export default function Tasks(props: TasksProps) {
 		project,
 		comments,
 	}: ItemProps) => (
-		<TouchableOpacity
-			onPress={() =>
-				goToTask(
-					id,
-					title,
-					description,
-					startDate,
-					endDate,
-					responsable,
-					creator,
-					project,
-					comments
-				)
-			}
-			disabled={editTaskSubmitting}
-		>
-			<View style={styles.item3}>
-				<Text style={styles.title}>{title}</Text>
-				<TouchableOpacity
-					onPress={() => deleteTask(id)}
-					style={styles.button3}
+		<Card mode="outlined">
+			<Card.Title
+				title={title}
+				left={(props) => <Avatar.Icon {...props} icon="pen" />}
+				titleVariant="headlineMedium"
+			/>
+			<Card.Actions>
+				<Button
+					onPress={() =>
+						goToTask(
+							id,
+							title,
+							description,
+							startDate,
+							endDate,
+							responsable,
+							creator,
+							project,
+							comments
+						)
+					}
 					disabled={editTaskSubmitting}
 				>
-					<Text>Ocultar</Text>
-				</TouchableOpacity>
-			</View>
-		</TouchableOpacity>
+					Detalle
+				</Button>
+				<Button
+					onPress={() => deleteTask(id)}
+					disabled={editTaskSubmitting}
+					loading={editTaskSubmitting}
+					buttonColor="#ff7360"
+				>
+					Ocultar
+				</Button>
+			</Card.Actions>
+		</Card>
 	);
 
 	function goToTask(
@@ -310,12 +334,23 @@ export default function Tasks(props: TasksProps) {
 	}
 
 	return (
-		<KeyboardAwareScrollView>
+		<KeyboardAwareScrollView style={{ paddingHorizontal: 8 }}>
+			<Text
+				variant="headlineLarge"
+				style={{
+					textAlign: "center",
+					marginTop: 40,
+					fontWeight: "bold",
+				}}
+			>
+				Tareas
+			</Text>
 			<View
 				style={{
 					flexDirection: "row",
 					alignItems: "center",
 					marginTop: 20,
+					marginBottom: 20,
 				}}
 			>
 				<TextInput
@@ -348,7 +383,6 @@ export default function Tasks(props: TasksProps) {
 				</TouchableOpacity>
 			</View>
 
-			<Text style={styles.title}>Tareas</Text>
 			<FlatList<TaskItem>
 				data={tasks.filter(
 					(item) =>
@@ -372,8 +406,19 @@ export default function Tasks(props: TasksProps) {
 				)}
 				keyExtractor={(item) => item.id.toString()}
 			/>
+			<Divider bold={true} style={{ marginTop: 30 }} />
 
-			<Text style={styles.title}>Pendientes</Text>
+			<Text
+				variant="headlineLarge"
+				style={{
+					textAlign: "center",
+					marginBottom: 20,
+					marginTop: 20,
+					fontWeight: "bold",
+				}}
+			>
+				Pendientes
+			</Text>
 			<FlatList
 				data={tasks.filter(
 					(item) => !item.deleted && item.status === "pendiente"
@@ -393,9 +438,21 @@ export default function Tasks(props: TasksProps) {
 				)}
 				keyExtractor={(item) => item.id.toString()}
 			/>
+			<Divider bold={true} style={{ marginTop: 30 }} />
 
-			<Text style={styles.title}>Completadas</Text>
+			<Text
+				variant="headlineLarge"
+				style={{
+					textAlign: "center",
+					marginBottom: 20,
+					marginTop: 20,
+					fontWeight: "bold",
+				}}
+			>
+				Completadas
+			</Text>
 			<FlatList
+				style={{ marginBottom: 50 }}
 				data={tasks.filter(
 					(item) =>
 						!item.deleted &&

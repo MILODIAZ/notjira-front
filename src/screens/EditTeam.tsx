@@ -1,13 +1,12 @@
+import { FlatList, StyleSheet, LogBox } from "react-native";
 import {
-	FlatList,
-	StyleSheet,
 	Text,
 	TextInput,
 	Button,
-	TouchableOpacity,
-	View,
-	LogBox,
-} from "react-native";
+	Divider,
+	Card,
+	Avatar,
+} from "react-native-paper";
 import { RouteProp } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
@@ -30,42 +29,44 @@ import {
 
 type RootStackParamList = {
 	EditTeam: {
-	  teamId: number;
-	  teamName: string;
-	  teamUsers: User[]; 
-	  teamProjects: Project[]; 
-	};	
+		teamId: number;
+		teamName: string;
+		teamUsers: User[];
+		teamProjects: Project[];
+	};
 	Management: undefined;
 	EditProject: {
-	  teamId: number;
-	  projectId: number;
-	  projectName: string;
-	  projectTasks: Object[];
+		teamId: number;
+		projectId: number;
+		projectName: string;
+		projectTasks: Object[];
 	};
-  };
-  type EditTeamScreenRouteProp = RouteProp<RootStackParamList, "EditTeam">;
-  type EditTeamScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, "EditTeam">;
-  type EditTeamProps = {
+};
+type EditTeamScreenRouteProp = RouteProp<RootStackParamList, "EditTeam">;
+type EditTeamScreenNavigationProp = NativeStackNavigationProp<
+	RootStackParamList,
+	"EditTeam"
+>;
+type EditTeamProps = {
 	navigation: EditTeamScreenNavigationProp;
 	route: EditTeamScreenRouteProp;
-  };
+};
 
-  interface Project {
+interface Project {
 	id: number;
-	name: string;	
-  }
-  
-  interface User {
-	userName: string;	
-  }
+	name: string;
+}
+
+interface User {
+	userName: string;
+}
 
 export default function EditTeam(props: EditTeamProps) {
 	const { navigation } = props;
 	const { refresh, refreshPage, auth } = useAuth();
 	const route = useRoute();
 	const routeParams = route.params as RootStackParamList["EditTeam"];
-const { teamId, teamName, teamUsers, teamProjects } = routeParams || {};
-
+	const { teamId, teamName, teamUsers, teamProjects } = routeParams || {};
 
 	const [projects, setProjects] = useState<Project[]>(teamProjects);
 	const [editTeamSubmitting, setEditTeamSubmitting] = useState(false);
@@ -222,11 +223,16 @@ const { teamId, teamName, teamUsers, teamProjects } = routeParams || {};
 	};
 
 	const TeamItem = ({ title, id }: ItemProps) => (
-		<TouchableOpacity onPress={() => goToProject(id)}>
-			<View style={styles.item}>
-				<Text style={styles.title}>{title}</Text>
-			</View>
-		</TouchableOpacity>
+		<Card mode="outlined">
+			<Card.Title
+				title={title}
+				left={(props) => <Avatar.Icon {...props} icon="folder" />}
+				titleVariant="headlineMedium"
+			/>
+			<Card.Actions>
+				<Button onPress={() => goToProject(id)}>Editar</Button>
+			</Card.Actions>
+		</Card>
 	);
 
 	useEffect(() => {
@@ -303,47 +309,94 @@ const { teamId, teamName, teamUsers, teamProjects } = routeParams || {};
 	}, [auxNewProjectBoolean, refresh]);
 
 	return (
-		<KeyboardAwareScrollView>
-			<Text style={styles.title}>{teamName}</Text>
+		<KeyboardAwareScrollView style={{ paddingHorizontal: 8 }}>
+			<Text
+				variant="headlineLarge"
+				style={{
+					textAlign: "center",
+					marginTop: 20,
+					fontWeight: "bold",
+				}}
+			>
+				{teamName}
+			</Text>
 
 			<Text style={styles.error}>{editTeamError}</Text>
 			<TextInput
-				style={styles.input}
+				label="Nuevo nombre"
 				onChangeText={(text) =>
 					editTeamFormik.setFieldValue("name", text)
 				}
-				placeholder="Nombre de equipo"
+				placeholder={teamName}
 				value={editTeamFormik.values.name}
 			/>
 			<Text style={styles.error}>{editTeamFormik.errors.name}</Text>
 			<Button
-				title="Cambiar nombre"
+				mode="contained"
 				onPress={() => editTeamFormik.handleSubmit()}
 				disabled={editTeamSubmitting}
-			/>
+				loading={editTeamSubmitting}
+				style={{ borderRadius: 0 }}
+			>
+				Cambiar nombre
+			</Button>
+			<Divider bold={true} style={{ marginTop: 30, marginBottom: 30 }} />
 
-			<Text style={styles.title}>Participantes</Text>
+			<Text
+				variant="headlineLarge"
+				style={{
+					textAlign: "center",
+					marginBottom: 20,
+					fontWeight: "bold",
+				}}
+			>
+				Participantes
+			</Text>
 			<FlatList
 				data={teamUsers}
-				renderItem={({ item }) => <Text>{item.userName}</Text>}
+				renderItem={({ item }) => (
+					<Card mode="outlined">
+						<Card.Title
+							title={item.userName}
+							left={(props) => (
+								<Avatar.Icon {...props} icon="account" />
+							)}
+							titleVariant="titleLarge"
+						/>
+					</Card>
+				)}
 				keyExtractor={(item) => item.userName}
 			/>
 
-			<Text style={styles.title}>Agregar participante</Text>
+			<Text
+				variant="headlineSmall"
+				style={{ marginLeft: 20, marginTop: 20 }}
+			>
+				Agregar participante
+			</Text>
 
 			<TextInput
-				style={styles.input}
+				label="Nombre de usuario"
 				onChangeText={(text) => setSelectedUsertoAdd(text)}
 				placeholder="Nombre de usuario"
 				value={selectedUsertoAdd || ""}
 			/>
 			<Button
-				title="Agregar"
+				mode="contained"
 				onPress={addUser}
 				disabled={editTeamSubmitting}
-			/>
+				loading={editTeamSubmitting}
+				style={{ borderRadius: 0 }}
+			>
+				Agregar
+			</Button>
 
-			<Text style={styles.title}>Remover participante</Text>
+			<Text
+				variant="headlineSmall"
+				style={{ marginLeft: 20, marginTop: 20 }}
+			>
+				Remover participante
+			</Text>
 
 			<RNPickerSelect
 				placeholder={{
@@ -380,12 +433,27 @@ const { teamId, teamName, teamUsers, teamProjects } = routeParams || {};
 				}}
 			/>
 			<Button
-				title="Quitar"
+				mode="contained"
 				onPress={removeUser}
 				disabled={editTeamSubmitting}
-			/>
+				loading={editTeamSubmitting}
+				style={{ borderRadius: 0 }}
+			>
+				Quitar
+			</Button>
 
-			<Text style={styles.title}>Proyectos</Text>
+			<Divider bold={true} style={{ marginTop: 30, marginBottom: 30 }} />
+
+			<Text
+				variant="headlineLarge"
+				style={{
+					textAlign: "center",
+					marginBottom: 20,
+					fontWeight: "bold",
+				}}
+			>
+				Proyectos
+			</Text>
 			<FlatList
 				data={projects}
 				renderItem={({ item }) => (
@@ -397,7 +465,7 @@ const { teamId, teamName, teamUsers, teamProjects } = routeParams || {};
 
 			<Text style={styles.error}>{newProjectError}</Text>
 			<TextInput
-				style={styles.input}
+				label="Nombre de proyecto"
 				onChangeText={(text) =>
 					newProjectFormik.setFieldValue("name", text)
 				}
@@ -406,17 +474,25 @@ const { teamId, teamName, teamUsers, teamProjects } = routeParams || {};
 			/>
 			<Text style={styles.error}>{newProjectFormik.errors.name}</Text>
 			<Button
-				title="Crear proyecto"
+				mode="contained"
 				onPress={() => newProjectFormik.handleSubmit()}
 				disabled={editTeamSubmitting}
-			/>
+				loading={editTeamSubmitting}
+				style={{ borderRadius: 0 }}
+			>
+				Crear proyecto
+			</Button>
 
 			<Button
-				title="ELIMINAR EQUIPO"
+				mode="contained"
 				onPress={() => deleteTeam(teamId)}
 				disabled={editTeamSubmitting}
-				color="red"
-			/>
+				loading={editTeamSubmitting}
+				buttonColor="red"
+				style={{ borderRadius: 0 }}
+			>
+				ELIMINAR EQUIPO
+			</Button>
 		</KeyboardAwareScrollView>
 	);
 }

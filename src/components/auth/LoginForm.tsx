@@ -1,5 +1,5 @@
-import { View, Text, StyleSheet, TextInput, Button, Image } from "react-native";
-import { RouteProp } from "@react-navigation/native";
+import { View, StyleSheet, Image } from "react-native";
+import { Text, TextInput, Button } from "react-native-paper";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import React, { useState } from "react";
 import { useFormik } from "formik";
@@ -56,7 +56,7 @@ export default function LoginForm(props: LoginProps) {
 	});
 
 	return (
-		<View>
+		<View style={{ paddingHorizontal: 20 }}>
 			<Image
 				source={require("../../assets/notjira-logo.png")}
 				style={styles.logo}
@@ -65,7 +65,7 @@ export default function LoginForm(props: LoginProps) {
 			<Text style={styles.error}>{error}</Text>
 			<TextInput
 				placeholder="Nombre de usuario"
-				style={styles.input}
+				label="Nombre de usuario"
 				autoCapitalize="none"
 				value={formik.values.username}
 				onChangeText={(text) => formik.setFieldValue("username", text)}
@@ -73,7 +73,7 @@ export default function LoginForm(props: LoginProps) {
 			<Text style={styles.error}>{formik.errors.username}</Text>
 			<TextInput
 				placeholder="Contraseña"
-				style={styles.input}
+				label="Contraseña"
 				autoCapitalize="none"
 				secureTextEntry={true}
 				value={formik.values.password}
@@ -81,10 +81,14 @@ export default function LoginForm(props: LoginProps) {
 			/>
 			<Text style={styles.error}>{formik.errors.password}</Text>
 			<Button
-				title="Entrar"
+				mode="contained"
 				onPress={() => formik.handleSubmit()}
 				disabled={isSubmitting}
-			/>
+				loading={isSubmitting}
+				style={{ borderRadius: 0 }}
+			>
+				Ingresar
+			</Button>
 		</View>
 	);
 }

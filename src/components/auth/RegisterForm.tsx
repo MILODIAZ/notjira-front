@@ -1,4 +1,5 @@
-import { View, Text, StyleSheet, TextInput, Button } from "react-native";
+import { View, StyleSheet } from "react-native";
+import { Text, TextInput, Button } from "react-native-paper";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import React, { useState } from "react";
 import { useFormik } from "formik";
@@ -61,13 +62,13 @@ export default function RegisterForm(props: RegisterFormProps) {
 	});
 
 	return (
-		<View>
+		<View style={{ paddingHorizontal: 20 }}>
 			<Text style={styles.title}>Registrarse</Text>
 			<Text style={styles.success}>{successMessage}</Text>
 			<Text style={styles.error}>{error}</Text>
 			<TextInput
 				placeholder="Nombre"
-				style={styles.input}
+				label="Nombre"
 				autoCapitalize="none"
 				value={formik.values.name}
 				onChangeText={(text) => formik.setFieldValue("name", text)}
@@ -75,7 +76,7 @@ export default function RegisterForm(props: RegisterFormProps) {
 			<Text style={styles.error}>{formik.errors.name}</Text>
 			<TextInput
 				placeholder="Apellido"
-				style={styles.input}
+				label="Apellido"
 				autoCapitalize="none"
 				value={formik.values.lastName}
 				onChangeText={(text) => formik.setFieldValue("lastName", text)}
@@ -83,7 +84,7 @@ export default function RegisterForm(props: RegisterFormProps) {
 			<Text style={styles.error}>{formik.errors.lastName}</Text>
 			<TextInput
 				placeholder="Nombre de usuario"
-				style={styles.input}
+				label="Nombre de usuario"
 				autoCapitalize="none"
 				value={formik.values.username}
 				onChangeText={(text) => formik.setFieldValue("username", text)}
@@ -91,7 +92,7 @@ export default function RegisterForm(props: RegisterFormProps) {
 			<Text style={styles.error}>{formik.errors.username}</Text>
 			<TextInput
 				placeholder="Contraseña"
-				style={styles.input}
+				label="Contraseña"
 				autoCapitalize="none"
 				secureTextEntry={true}
 				value={formik.values.password}
@@ -100,17 +101,21 @@ export default function RegisterForm(props: RegisterFormProps) {
 			<Text style={styles.error}>{formik.errors.password}</Text>
 			<TextInput
 				placeholder="Email"
-				style={styles.input}
+				label="Email"
 				autoCapitalize="none"
 				value={formik.values.email}
 				onChangeText={(text) => formik.setFieldValue("email", text)}
 			/>
 			<Text style={styles.error}>{formik.errors.email}</Text>
 			<Button
-				title="Registrar"
+				mode="contained"
 				onPress={() => formik.handleSubmit()}
 				disabled={isSubmitting}
-			/>
+				loading={isSubmitting}
+				style={{ borderRadius: 0 }}
+			>
+				Registrar
+			</Button>
 		</View>
 	);
 }

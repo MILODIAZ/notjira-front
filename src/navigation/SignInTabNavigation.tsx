@@ -19,7 +19,7 @@ export default function SignInTabNavigation() {
 					tabBarIcon: ({ color, size }) => (
 						<Icon name="user-plus" color={color} size={size} />
 					),
-					headerShown: true,
+					headerShown: false,
 				}}
 			/>
 			<Tab.Screen
@@ -30,7 +30,7 @@ export default function SignInTabNavigation() {
 					tabBarIcon: ({ color, size }) => (
 						<Icon name="key" color={color} size={size} />
 					),
-					headerShown: true,
+					headerShown: false,
 				}}
 			/>
 			<Tab.Screen
@@ -41,7 +41,7 @@ export default function SignInTabNavigation() {
 					tabBarIcon: ({ color, size }) => (
 						<Icon name="unlock" color={color} size={size} />
 					),
-					headerShown: true,
+					headerShown: false,
 				}}
 			/>
 		</Tab.Navigator>

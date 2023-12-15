@@ -20,7 +20,7 @@ export default function AppNavigation() {
 					tabBarIcon: ({ color, size }) => (
 						<Icon name="address-book" color={color} size={size} />
 					),
-					headerShown: true,
+					headerShown: false,
 				}}
 			/>
 			<Tab.Screen
@@ -29,7 +29,7 @@ export default function AppNavigation() {
 				options={{
 					tabBarLabel: "",
 					tabBarIcon: () => renderTasksIcon(),
-					headerShown: true,
+					headerShown: false,
 				}}
 			/>
 			<Tab.Screen
@@ -40,7 +40,7 @@ export default function AppNavigation() {
 					tabBarIcon: ({ color, size }) => (
 						<Icon name="user" color={color} size={size} />
 					),
-					headerShown: true,
+					headerShown: false,
 				}}
 			/>
 		</Tab.Navigator>

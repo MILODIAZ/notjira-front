@@ -1,7 +1,5 @@
 import React from "react";
-import { TextInput } from "react-native";
-import { Text } from "react-native";
-import { Button } from "react-native";
+import { Text, TextInput, Button } from "react-native-paper";
 import { useState } from "react";
 import { StyleSheet } from "react-native";
 import { useFormik } from "formik";
@@ -103,11 +101,11 @@ export default function EditProfile(props: EditProfileProps) {
 	});
 
 	return (
-		<KeyboardAwareScrollView>
+		<KeyboardAwareScrollView style={{ paddingHorizontal: 8 }}>
 			<Text style={styles.error}>{editProfileError}</Text>
 
 			<TextInput
-				style={styles.input}
+				label="Nombre"
 				onChangeText={(text) =>
 					editProfileFormik.setFieldValue("name", text)
 				}
@@ -117,7 +115,7 @@ export default function EditProfile(props: EditProfileProps) {
 			<Text style={styles.error}>{editProfileFormik.errors.name}</Text>
 
 			<TextInput
-				style={styles.input}
+				label="Apellido"
 				onChangeText={(text) =>
 					editProfileFormik.setFieldValue("lastName", text)
 				}
@@ -129,7 +127,7 @@ export default function EditProfile(props: EditProfileProps) {
 			</Text>
 
 			<TextInput
-				style={styles.input}
+				label="Nombre de usuario"
 				onChangeText={(text) =>
 					editProfileFormik.setFieldValue("userName", text)
 				}
@@ -141,7 +139,7 @@ export default function EditProfile(props: EditProfileProps) {
 			</Text>
 
 			<TextInput
-				style={styles.input}
+				label="Email"
 				onChangeText={(text) =>
 					editProfileFormik.setFieldValue("email", text)
 				}
@@ -151,10 +149,14 @@ export default function EditProfile(props: EditProfileProps) {
 			<Text style={styles.error}>{editProfileFormik.errors.email}</Text>
 
 			<Button
-				title="Enviar cambios"
+				mode="contained"
 				onPress={() => editProfileFormik.handleSubmit()}
 				disabled={editProfileSubmitting}
-			/>
+				loading={editProfileSubmitting}
+				style={{ borderRadius: 0 }}
+			>
+				Guardar cambios
+			</Button>
 		</KeyboardAwareScrollView>
 	);
 }
