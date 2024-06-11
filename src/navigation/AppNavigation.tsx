@@ -13,6 +13,7 @@ export default function AppNavigation() {
 	return (
 		<Tab.Navigator initialRouteName="Tasks">
 			<Tab.Screen
+				testId="Management"
 				name="Management"
 				component={Management}
 				options={{
@@ -24,6 +25,7 @@ export default function AppNavigation() {
 				}}
 			/>
 			<Tab.Screen
+				testId="Tasks"
 				name="Tasks"
 				component={Tasks}
 				options={{
@@ -33,6 +35,7 @@ export default function AppNavigation() {
 				}}
 			/>
 			<Tab.Screen
+				testId="Profile"
 				name="Profile"
 				component={Profile}
 				options={{

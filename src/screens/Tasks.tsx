@@ -336,6 +336,7 @@ export default function Tasks(props: TasksProps) {
 	return (
 		<KeyboardAwareScrollView style={{ paddingHorizontal: 8 }}>
 			<Text
+				testID="Tareas"
 				variant="headlineLarge"
 				style={{
 					textAlign: "center",

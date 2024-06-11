@@ -64,6 +64,7 @@ export default function LoginForm(props: LoginProps) {
 			<Text style={styles.title}>Iniciar sesión</Text>
 			<Text style={styles.error}>{error}</Text>
 			<TextInput
+				testID="userNameInput"
 				placeholder="Nombre de usuario"
 				label="Nombre de usuario"
 				autoCapitalize="none"
@@ -72,6 +73,7 @@ export default function LoginForm(props: LoginProps) {
 			/>
 			<Text style={styles.error}>{formik.errors.username}</Text>
 			<TextInput
+				testID="passwordInput"
 				placeholder="Contraseña"
 				label="Contraseña"
 				autoCapitalize="none"
