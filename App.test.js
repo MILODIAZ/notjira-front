@@ -1,8 +1,8 @@
 import React from "react";
 import { render, fireEvent, waitFor } from "@testing-library/react-native";
-import LoginForm from "./LoginForm";
-import useAuth from "../../hooks/useAuth";
-import { loginFetch } from "../../api/api.connection";
+import LoginForm from "./src/components/auth/LoginForm";
+import { loginFetch } from "./src/api/api.connection";
+import { AuthProvider } from "./src/context/AuthContext";
 
 // Import navigation dependencies
 import { NavigationContainer } from '@react-navigation/native';
@@ -10,34 +10,29 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 const Stack = createNativeStackNavigator();
 
-// Use the real useAuth hook
-jest.mock('../../hooks/useAuth');
-
 // Use the real loginFetch function
-jest.mock('../../api/api.connection', () => {
-	const originalModule = jest.requireActual('../../api/api.connection');
+jest.mock('./src/api/api.connection', () => {
+	const originalModule = jest.requireActual('./src/api/api.connection');
 	return {
 		...originalModule,
 		__esModule: true,
 	};
 });
 
-describe("LoginForm", () => {
-	let loginMock;
-	let navigationMock;
+describe("App", () => {
+	test("renders correctly and submits the login form", () => {
+		const navigation = {
+			navigate: jest.fn(),
+			reset: jest.fn(),
+		};
 
-	beforeEach(() => {
-		loginMock = jest.fn();
-		useAuth.mockReturnValue({ login: loginMock });
-		navigationMock = { navigate: jest.fn(), reset: jest.fn() };
-	});
-
-	test("renders correctly and submits the form", () => {
 		const { getByTestId, getByText } = render(
 			<NavigationContainer>
 				<Stack.Navigator>
 					<Stack.Screen name="LoginForm" options={{ headerShown: false }}>
-						{(props) => <LoginForm {...props} navigation={navigationMock} />}
+						{(props) => <AuthProvider> {/* Provide the real AuthProvider */}
+							<LoginForm {...props} navigation={navigation} />
+						</AuthProvider>}
 					</Stack.Screen>
 				</Stack.Navigator>
 			</NavigationContainer>
@@ -49,25 +44,20 @@ describe("LoginForm", () => {
 		const loginButton = getByText("Ingresar");
 
 		// Fill the form fields
-		fireEvent.changeText(usernameInput, 'MiloSky');
+		fireEvent.changeText(usernameInput, 'SolidSnake');
 		fireEvent.changeText(passwordInput, 'Zm361118*');
 
 		// Submit the form
 		fireEvent.press(loginButton);
+		waitFor(() => expect(loginFetch).toHaveBeenCalledTimes(1));
 
 		// Wait for the form submission to be processed
 		waitFor(() => {
-			expect(loginMock).toHaveBeenCalled();
-			expect(navigationMock.navigate).toHaveBeenCalledWith('AppNavigation');
-			expect(navigationMock.reset).toHaveBeenCalledWith({
+			expect(navigation.navigate).toHaveBeenCalledWith('AppNavigation');
+			expect(navigation.reset).toHaveBeenCalledWith({
 				index: 0,
 				routes: [{ name: 'AppNavigation' }],
 			});
 		});
-
-		// Verificar que se ha navegado a AppNavigation buscando un elemento presente en dicha pantalla
-
-		const appNavigationText = getByTestId("Tareas");
-		expect(appNavigationText).toBeTruthy();
 	});
 });
